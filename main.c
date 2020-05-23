@@ -23,11 +23,19 @@
 #include "fifo.h"
 #include "threads.h"
 
+#include <stdio.h>
 #include <fcntl.h>
 #include <linux/rtc.h>
 #include <pthread.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
+
+/* Function prototypes. */
+#ifndef fcloseall
+int fcloseall(void);
+#endif
+void do_shut_down(int sig);
 
 /* Condition (timer interrupt) for all threads to poll. */
 pthread_cond_t rtc_interrupt = PTHREAD_COND_INITIALIZER;
@@ -182,6 +190,14 @@ int main(int argc, char **argv) {
   } /* End of create threads loop. */
   
 
+  // Catch control-C (SIGINT) and gracefully shut down                          
+  struct sigaction new_action;                                                  
+  new_action.sa_handler = do_shut_down;
+  sigemptyset (&new_action.sa_mask);
+  new_action.sa_flags = 0;
+  if (sigaction(SIGINT, &new_action, NULL) == -1)                               
+    fprintf(stderr, "Error catching Ctrl-C signal");
+  
   /* Read from RTC device, notifiying all threads each poll. */
   do {
     rc = read(fd_rtc, NULL, sizeof(unsigned long));
@@ -199,4 +215,11 @@ int main(int argc, char **argv) {
   fprintf(stderr, "Failed to read RTC device: (%d) %s\n", -rc, strerror(rc));
 
   return EXIT_FAILURE;
+}
+
+// Called explicitly to catch ctrl-c, so exit when done.                        
+void do_shut_down(int sig) {                                                      
+                                                                                
+  fcloseall();
+  exit(sig);                                                                    
 }

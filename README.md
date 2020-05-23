@@ -9,25 +9,25 @@ by Filip Aláč <filipalac@gmail.com>, copyright 2018.
 ## Overview
 
 This provides a stand-alone program that adds lag to to events from
-input devices.
+input devices.  The additions to this version (over the original) are:
 
-The primary additions to this version are:
+1) The ability to add lag to more than one input device at a time.
 
-1) The ability to add lag to more than one input device
-at a time.
+2) The option to log input events to a log file, one per device.
 
-2) The ability to log input events to a log file.
+There is no need to install any additional kernel module, everything
+works in userspace through libevdev and uinput.
 
 
 ## Compile
 
-Libevdev needed:
+The libevdev package is needed:
 
 ```
   sudo apt install libevdev-lib
 ```
 
-Then:
+To build:
 
 ```
   make
@@ -36,32 +36,50 @@ Then:
 
 ## Usage
 
-Mark: Update
+Evlag is run as a command line tool, indicating the amount of lag and
+device(s).
 
+```
+Usage: evlag [OPTION...]
+            --lag <NUM> --device <FILE> [--device <FILE> ... (max 10)]
+
+  -b, --buffer=NUM           Set size of buffer (MiB)
+  -d, --device=FILE          /dev/input/eventX
+  -f, --file=FILE            Logfile for events (default none)
+  -h, --Hz=NUM               Set polling rate of uinput device (1 - 8192,
+                             default 2048)
+  -l, --lag=NUM              Set length of delay (ms)
+  -p, --priority=NUM         Set scheduler priority (1 - 99, default 20)
+  -r, --resize=NUM           Set resize factor of full buffer (default 2)
+  -v, --verbose              Set verbose on (default off)
+  -?, --help                 Give this help list
+      --usage                Give a short usage message
+  -V, --version              Print program version
+
+```
 
 For example:
 
 ```
-  evlag -d /dev/input/event16 -l 200 -h 8192
+  evlag -h 8192 -l 100 -d /dev/input/event10 -d /dev/input/event6
 ```
 
-Will generate additional 200 ms of delay on device(in my case trackpoint)
-with consumer polling rate(rate at which are events written to virtual device)
-of 8192 Hz.
-
-No need to install any additional kernel module, everything works in
-userspace through libevdev and uinput.
+Will generate additional 100 ms of delay on the event10 device (e.g.,
+a mouse and a keyboard) with a polling rate of 8192 Hz.
 
 
 ## Output
 
-Evlag can produce logfiles upon request (-f flag).  When doing so, it
-creates a logfile for each device, trying to detect the device as one
-of:
+Evlag can produce logfiles upon request.  This is done by using the
+`-f NAME` flag, with NAME being used as the file prefix and `.log` as
+the suffix.  This creates a logfile for each device, detecting the
+device type as one of:
 
 + mouse
 + keyboard
 + other
+
+The device type is used as a prefix in the name.
 
 The logfiles are in comma separated value (CSV) format, with each row:
 
@@ -71,6 +89,9 @@ The logfiles are in comma separated value (CSV) format, with each row:
 
 The first row is the header.  The first column is the time the event
 occurred (in milliseconds) relative to the start.
+
+To better understand the codes and values, see:
+<http://who-t.blogspot.com/2016/09/understanding-evdev.html>
 
 
 ## License
