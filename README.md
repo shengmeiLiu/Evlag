@@ -1,8 +1,8 @@
-# Evlag
+# EvLag
 
 A simple tool for simulating input lag in Linux.
 
-Original source: `https://github.com/filipalac/evlag.git`  
+Original source: <https://github.com/filipalac/evlag.git>  
 by Filip Aláč <filipalac@gmail.com>, copyright 2018.
 
 
@@ -36,7 +36,7 @@ To build:
 
 ## Usage
 
-Evlag is run as a command line tool, indicating the amount of lag and
+EvLag is run as a command line tool, indicating the amount of lag and
 device(s).
 
 ```
@@ -70,7 +70,7 @@ a mouse and a keyboard) with a polling rate of 8192 Hz.
 
 ## Output
 
-Evlag can produce logfiles upon request.  This is done by using the
+EvLag can produce logfiles upon request.  This is done by using the
 `-f NAME` flag, with NAME being used as the file prefix and `.log` as
 the suffix.  This creates a logfile for each device, detecting the
 device type as one of:
@@ -90,7 +90,18 @@ The logfiles are in comma separated value (CSV) format, with each row:
 The first row is the header.  The first column is the time the event
 occurred (in milliseconds) relative to the start.
 
-To better understand the codes and values, see:
+
+## Links
+
+Some related links that may be useful:
+
++ LibEvDev documentation:
+<https://www.freedesktop.org/software/libevdev/doc/1.4/index.html>
+
++ Man pages:
+<https://www.freedesktop.org/software/libevdev/doc/latest/group__init.html>
+
++ Understand the codes and values in the logfile:
 <http://who-t.blogspot.com/2016/09/understanding-evdev.html>
 
 

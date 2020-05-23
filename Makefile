@@ -25,4 +25,5 @@ $(TARGET) : $(OBJECTS)
 	$(CC) $(CFLAGS)  -o $@ -c $<
 
 clean :
-	rm -f $(TARGET) *.o
+	rm -f $(TARGET) *.o *.log
+
