@@ -29,7 +29,7 @@ const char *argp_program_version =
   "evlag 2.0";
 
 const char *argp_program_bug_address =
-  "<claypool@cs.wpi.edu>";
+  "Mark Claypool <claypool@cs.wpi.edu>";
 
 static char doc[] =
   "\nevlag 2.0 -- A simple tool for simulating input lag\n"

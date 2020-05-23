@@ -66,6 +66,7 @@ int main(int argc, char **argv) {
     printf("Logfile: %s\n", args.logfile_name ? args.logfile_name : "(none)");
   }
   
+
   /* Set scheduler priority. */
   struct sched_param sched;
   sched.sched_priority = args.priority;

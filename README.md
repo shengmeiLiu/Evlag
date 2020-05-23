@@ -53,6 +53,26 @@ No need to install any additional kernel module, everything works in
 userspace through libevdev and uinput.
 
 
+## Output
+
+Evlag can produce logfiles upon request (-f flag).  When doing so, it
+creates a logfile for each device, trying to detect the device as one
+of:
+
++ mouse
++ keyboard
++ other
+
+The logfiles are in comma separated value (CSV) format, with each row:
+
+```
+    millisec, event-type, event-code, event-value
+```
+
+The first row is the header.  The first column is the time the event
+occurred (in milliseconds) relative to the start.
+
+
 ## License
 
 This program is free software; you can redistribute it and/or modify

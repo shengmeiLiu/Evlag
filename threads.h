@@ -30,8 +30,8 @@
  * and write_event functions.
  */
 struct thread_data {
-  struct fifo_header *fifo;
   struct arguments *args;
+  struct fifo_header *fifo;
   struct libevdev *event_dev;
   struct libevdev_uinput *uinput_dev;
 };

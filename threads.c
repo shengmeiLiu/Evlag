@@ -82,25 +82,73 @@ void *write_event(void *arg) {
   struct thread_data *data = (struct thread_data *)arg;
   struct timeval current_time;
   struct input_event ev;
-  int have_event = 0; // First event is a special case.
+  int have_event = 0;
   int rc_fifo = 0;    
   int rc;
+  int start = 0;
+  FILE *fp = NULL;
+
+  /* Prepare logfile. */
+  if (&data->args->logfile_name) {
+    char *ev_name; // = libevdev_get_name(data->event_dev);
+    if (gettimeofday(&current_time, NULL) == 0)
+      start = current_time.tv_sec * 1000 + current_time.tv_usec / 1000;
+    
+    if (libevdev_has_event_type(data->event_dev, EV_REL) &&
+	libevdev_has_event_code(data->event_dev, EV_KEY, BTN_LEFT))
+      ev_name = "mouse";
+    else if (libevdev_has_event_type(data->event_dev, EV_KEY))
+      ev_name = "keyboard";
+    else
+      ev_name = "other";
+      
+    int len = strlen(data->args->logfile_name) + strlen(ev_name) + 2;
+    char *file_name = (char *) malloc(len);
+    if (!file_name) {
+      fprintf(stderr, "Unable to malloc().  No logging.");
+      fp = NULL;
+    } else {
+      sprintf(file_name, "%s-%s", data->args->logfile_name, ev_name);
+      fp = fopen(file_name, "w");
+      if (!fp)
+	fprintf(stderr, "Unable to open file: %s. No logging.", file_name);
+      free(file_name);
+    }
+
+    if (fp)
+      fprintf(fp, "millisec, event-type, event-code, event-value\n");
+
+  } // Opened logfile.
 
   while (1) {
 
     rc = gettimeofday(&current_time, NULL);
     if (rc != 0)
-      fprintf(stderr, "Failed to gettimeofday() : %s\n", strerror(errno));
-      
-    if (timercmp(&current_time, &ev.time, >=))  {
+      fprintf(stderr, "Failed to gettimeofday(): %s\n", strerror(errno));
+
+    /* Compare current time to time of latest event. */
+    if (timercmp(&current_time, &ev.time, >=)) {
 
       do {
 
 	if (have_event) {
-	  rc = libevdev_uinput_write_event(data->uinput_dev, ev.type,
-					   ev.code, ev.value);
+	  rc = libevdev_uinput_write_event(data->uinput_dev,
+					   ev.type, ev.code, ev.value);
 	  if (rc != 0)
 	    fprintf(stderr, "Failed to write uinput event: %s\n",  strerror(-rc));
+	  
+	  /* Write event to logfile. */
+	  if (fp) {
+
+	    int now = ev.time.tv_sec * 1000 + ev.time.tv_usec / 1000;
+	    fprintf(fp, "%d, %d, %d, %d\n",
+		    now - start,
+		    ev.type,
+		    ev.code,
+		    ev.value);
+	  }
+
+	  have_event = 0;
 	}
 
 	rc = pthread_mutex_lock(&fifo_mutex);
@@ -110,12 +158,14 @@ void *write_event(void *arg) {
 	rc_fifo = fifo_pop(data->fifo, &ev);
 	if (rc_fifo == 0)
 	  have_event = 1;
+	else
+	  have_event = 0;
 
 	rc = pthread_mutex_unlock(&fifo_mutex);
 	if (rc != 0) 
 	  fprintf(stderr, "Failed to unlock mutex: %s\n", strerror(rc));
 
-      } while (timercmp(&current_time, &ev.time, >=) && rc_fifo == 0);
+      } while (timercmp(&current_time, &ev.time, >=) && have_event);
 
     }
 
@@ -132,54 +182,7 @@ void *write_event(void *arg) {
     if (rc != 0) 
       fprintf(stderr, "Failed to unlock mutex: %s\n", strerror(rc));
 
-  } // End of while (1)
+  } /* End of while (1) */
 
 }
 
-/*
-void *write_event(void *arg) {
-  extern pthread_cond_t rtc_interrupt; // Declared in main().
-
-  struct thread_data *data = (struct thread_data *)arg;
-  int rc;
-  
-  while (1) {
-
-    struct input_event ev;
-    struct timeval current_time;
-    gettimeofday(&current_time, NULL);
-    struct timeval temp = ev.time;
-    
-    if (timercmp(&current_time, &ev.time, >=)) {
-      int rc_fifo = 0;
-      
-      do {
-	rc = libevdev_uinput_write_event(
-					 data->uinput_dev, ev.type,
-					 ev.code, ev.value);
-	
-	if (rc != 0)
-	  fprintf(stderr, "Failed to write uinput event: %s\n",  strerror(-rc));
-	
-	rc = pthread_mutex_lock(&fifo_mutex);
-	if (rc != 0)
-	  fprintf(stderr, "Failed to lock mutex: %s\n", strerror(rc));
-	
-	rc_fifo = fifo_pop(data->fifo, &ev);
-	
-	rc = pthread_mutex_unlock(&fifo_mutex);
-	if (rc != 0) 
-	  fprintf(stderr, "Failed to unlock mutex: %s\n", strerror(rc));
-	
-      } while (timercmp(&temp, &ev.time, ==) && rc_fifo == 0);
-    }
-
-    // Block until next time interval interrupt. 
-    pthread_mutex_lock(&suspend_mutex);
-    pthread_cond_wait(&rtc_interrupt, &suspend_mutex);
-    pthread_mutex_unlock(&suspend_mutex);
-
-  } // End of while (1)
-
-}
-*/
