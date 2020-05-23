@@ -101,14 +101,14 @@ void *write_event(void *arg) {
       ev_name = "keyboard";
     else
       ev_name = "other";
-      
-    int len = strlen(data->args->logfile_name) + strlen(ev_name) + 2;
+
+    int len = strlen(data->args->logfile_name) + strlen(ev_name) + 4;
     char *file_name = (char *) malloc(len);
     if (!file_name) {
       fprintf(stderr, "Unable to malloc().  No logging.");
       fp = NULL;
     } else {
-      sprintf(file_name, "%s-%s", data->args->logfile_name, ev_name);
+      sprintf(file_name, "%s-%s.log", data->args->logfile_name, ev_name);
       fp = fopen(file_name, "w");
       if (!fp)
 	fprintf(stderr, "Unable to open file: %s. No logging.", file_name);
