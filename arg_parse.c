@@ -26,18 +26,18 @@
 #include <libevdev/libevdev.h>
 
 const char *argp_program_version =
-  "evlag 2.0";
+  "evlag 2.1";
 
 const char *argp_program_bug_address =
   "Mark Claypool <claypool@cs.wpi.edu>";
 
 static char doc[] =
-  "\nevlag 2.0 -- A simple tool for simulating input lag\n"
+  "\nevlag 2.1 -- A simple tool for simulating input lag\n"
   "\nIf resize factor is set to 0 or 1, buffer won't resize.\n"
   "Don't forget to run as superuser.";
 
 static char args_doc[] =
-  "--lag <NUM> --device <FILE> [--device <FILE> ... (max 10)]";
+  "--device <FILE> [--device <FILE> ... (max 10)] [--lag <NUM>]";
 
 static struct argp_option options[] = {
   {"device", 'd', "FILE", 0, "/dev/input/eventX"},
@@ -98,14 +98,8 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 
   case ARGP_KEY_END:
     /* Check if file is specified. */
-    if (args->device_count == 0) {
+    if (args->device_count == 0)
       argp_state_help(state, stdout, ARGP_HELP_STD_HELP);
-    }
-    
-    /* Check if delay is specified. */
-    if (args->delay.tv_sec == 0 && args->delay.tv_usec == 0) {
-      argp_state_help(state, stdout, ARGP_HELP_STD_HELP);
-    }
     
     /*
      * If buffer size is not specified, calculate buffer size by:
