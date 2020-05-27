@@ -1,6 +1,7 @@
 /*
  * evlag
- * Copyright 2018 Filip Aláč
+ * 
+ * Copyright 2020 Mark Claypool, WPI
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,11 +18,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/*
- * Fifo based on:
- * stratifylabs.co/embedded%20design%20tips/2013/10/02/Tips-A-FIFO-Buffer-Implementation/
- */
-
 #include "fifo.h"
 
 #include <stdio.h>
@@ -29,95 +25,92 @@
 #include <string.h>
 #include <libevdev/libevdev.h>
 
-void *fifo_create(struct fifo_header *f, size_t size)
-{
-	f->buf = malloc(size * sizeof(struct input_event));
-	f->head = 0;
-	f->tail = 0;
-	f->size = size;
+void *fifo_create(struct fifo_header *p_f, size_t size) {
 
-	return f->buf;
+  if (!p_f) {
+    fprintf(stderr, "Error! fifo_create(): fifo header is NULL");
+    return NULL;
+  }
+
+  p_f->p_buf = malloc(size * sizeof(struct input_event));
+  if (!p_f->p_buf) {
+    fprintf(stderr, "Error! fifo_create(): unable to allocate memory.");
+    return NULL;
+  }
+  p_f->head = 0;
+  p_f->tail = 0;
+  p_f->size = size;
+
+  return p_f->p_buf;
 }
 
-void *fifo_realloc(struct fifo_header *f, size_t new_size)
-{
-	struct input_event *new_buf = malloc(new_size *
-				sizeof(struct input_event));
-
-	if (new_buf == NULL) {
-		return new_buf;
-	}
-
-	/* Copy f->buf[0...f->head] to temp_buf. */
-	memcpy(&new_buf[0], &f->buf[0], f->head * sizeof(struct input_event));
-
-	if (f->tail != 0) {
-		/* Number of elements to copy. */
-		size_t num = f->size - f->tail;
-
-		/* Copy f->buf[f->tail...f->size] to the end of temp_buf. */
-		memcpy(&new_buf[new_size - num], &f->buf[f->tail],
-					sizeof(struct input_event) * num);
-
-		/* Set new tail. */
-		f->tail = new_size - num;
-	}
-
-	free(f->buf);
-
-	f->buf = new_buf;
-	f->size = new_size;
-
-	return f->buf;
+void *fifo_realloc(struct fifo_header *p_f) {
+  size_t new_size = p_f->size * 2;
+  struct input_event *new_buf = malloc(new_size *
+				       sizeof(struct input_event));
+  if (new_buf == NULL) {
+    fprintf(stderr, "Error! fifo_realloc(): unable to allocate memory.");
+    return NULL;
+  }
+  
+  /* Copy p_f->buf[0...p_f->head] to temp_buf. */
+  memcpy(&new_buf[0], &p_f->p_buf[0], p_f->head * sizeof(struct input_event));
+  
+  if (p_f->tail != 0) {
+    /* Number of elements to copy. */
+    size_t num = p_f->size - p_f->tail;
+    
+    /* Copy p_f->buf[p_f->tail...p_f->size] to the end of temp_buf. */
+    memcpy(&new_buf[new_size - num], &p_f->p_buf[p_f->tail],
+	   sizeof(struct input_event) * num);
+    
+    /* Set new tail. */
+    p_f->tail = new_size - num;
+  }
+  
+  free(p_f->p_buf);
+  
+  p_f->p_buf = new_buf;
+  p_f->size = new_size;
+  
+  return p_f->p_buf;
 }
 
-void handle_full_fifo(struct fifo_header *fifo, size_t *resize_factor)
-{
-	if (*resize_factor < 2) {
-		printf("Fifo buffer full, data discarded.\n");
-	} else {
-		printf("Fifo buffer full, reallocating.\n");
+int fifo_pop(struct fifo_header *p_f, struct input_event *p_output) {
 
-		size_t new_size = fifo->size * *resize_factor;
+  if (p_f->tail != p_f->head) {
 
-		if (fifo_realloc(fifo, new_size) == NULL) {
-			perror("Failed to reallocate buffer");
+    /* Pop item off tail. */
+    *p_output = p_f->p_buf[p_f->tail];
+    p_f->tail++;
+    if (p_f->tail == p_f->size)
+      p_f->tail = 0;
 
-			printf("Setting resize factor to 1.\n");
-			*resize_factor = 1;
-		} else {
-			printf("Buffer reallocated, new size is %zuB.\n",
-					new_size * sizeof(struct input_event));
-		}
-	}
+  } else
+    /* Fifo empty. */
+    return -1; 
+  
+  return 0;
 }
 
-int fifo_pop(struct fifo_header *f, struct input_event *output)
-{
-	if (f->tail != f->head) {
-		*output = f->buf[f->tail];
-		f->tail++;
-		if (f->tail == f->size)
-			f->tail = 0;
-	} else {
-		return -1;
-	}
+int fifo_push(struct fifo_header *p_f, const struct input_event *p_input) {
 
-	return 0;
-}
+  /* Check if full. */
+  if (p_f->head + 1 == p_f->tail ||
+      (p_f->head + 1 == p_f->size && p_f->tail == 0)) {
+    
+    fprintf(stderr, "Warning! fifo_push(): Fifo buffer full.\n");
+    if (fifo_realloc(p_f) == NULL) {
+      fprintf(stderr, "Error! fifo_push(): Failed to reallocate buffer.");
+      return -1;
+    }
+  } 
 
-int fifo_push(struct fifo_header *f, const struct input_event *input)
-{
-	if (f->head + 1 == f->tail ||
-			(f->head + 1 == f->size && f->tail == 0)) {
-		return -1;
-	} else {
-		f->buf[f->head] = *input;
-		f->head++;
-		if (f->head == f->size) {
-			f->head = 0;
-		}
-	}
-
-	return 0;
+  /* Push item on to head. */
+  p_f->p_buf[p_f->head] = *p_input;
+  p_f->head++;
+  if (p_f->head == p_f->size)
+    p_f->head = 0;
+  
+  return 0;
 }

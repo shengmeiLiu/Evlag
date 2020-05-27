@@ -26,26 +26,23 @@
 #include <libevdev/libevdev-uinput.h>
 
 /*
- * Structure which is passed to get_event
+ * Structure is passed to get_event
  * and write_event functions.
  */
 struct thread_data {
-  struct arguments *args;
-  struct fifo_header *fifo;
-  struct libevdev *event_dev;
-  struct libevdev_uinput *uinput_dev;
+  struct arguments *p_args;
+  struct fifo_header *p_fifo;
+  struct libevdev *p_event_dev;
+  struct libevdev_uinput *p_uinput_dev;
 };
 
 /*
- * This function is receiving events, adding delay
- * to them and writing them to fifo buffer.
+ * Receive events, adding delay, and writing to fifo buffer.
  */
-void *get_event(void *arg);
+void *get_event(void *p_arg);
 
 /*
- * This function is receiving events from fifo buffer,
- * comparing fifo event timeval with current time, and
- * when the current time is same or bigger than the event
- * time, write the events to uinput device.
+ * Pull events from fifo buffer, comparing event time with current
+ * time, and write events to uinput device.
  */
-void *write_event(void *arg);
+void *write_event(void *p_arg);

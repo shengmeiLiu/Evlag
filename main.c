@@ -50,7 +50,6 @@ int main(int argc, char **argv) {
   args.delay.tv_sec = 0;
   args.delay.tv_usec = 0;
   args.buf_size = 0;
-  args.resize_factor = RESIZE_FACTOR_DEFAULT;
   args.priority = PRIORITY_DEFAULT;
   args.polling_rate = POLLING_RATE_DEFAULT;
   args.logfile_name = NULL;
@@ -68,7 +67,6 @@ int main(int argc, char **argv) {
     printf("Delay: %ld ms\n", args.delay.tv_sec*1000 +
 	   args.delay.tv_usec/1000);
     printf("Buffer size: %ld\n", args.buf_size);
-    printf("Resize factor: %ld\n", args.resize_factor);
     printf("Priority: %d\n", args.priority);
     printf("Polling rate: %d\n", args.polling_rate);
     printf("Logfile: %s\n", args.logfile_name ? args.logfile_name : "(none)");
@@ -167,10 +165,10 @@ int main(int argc, char **argv) {
   
   
     /* Setup data for threads. */
-    data[i].fifo = &(fifo[i]);
-    data[i].args = &args;
-    data[i].event_dev = event_dev[i];
-    data[i].uinput_dev = uinput_dev[i];
+    data[i].p_fifo = &(fifo[i]);
+    data[i].p_args = &args;
+    data[i].p_event_dev = event_dev[i];
+    data[i].p_uinput_dev = uinput_dev[i];
 
     /* Create threads. */
     rc = pthread_create(&(thr[i][0]), NULL, get_event, &(data[i]));

@@ -26,14 +26,13 @@
 #include <libevdev/libevdev.h>
 
 const char *argp_program_version =
-  "evlag 2.1";
+  "evlag 2.2";
 
 const char *argp_program_bug_address =
   "Mark Claypool <claypool@cs.wpi.edu>";
 
 static char doc[] =
-  "\nevlag 2.1 -- A simple tool for simulating input lag\n"
-  "\nIf resize factor is set to 0 or 1, buffer won't resize.\n"
+  "\nevlag 2.2 -- A simple tool for simulating input lag.\n"
   "Don't forget to run as superuser.";
 
 static char args_doc[] =
@@ -44,7 +43,6 @@ static struct argp_option options[] = {
   {"lag", 'l', "NUM", 0, "Set length of delay (ms)"},
   {"buffer", 'b', "NUM", 0, "Set size of buffer (MiB)"},
   {"Hz", 'h', "NUM", 0, "Set polling rate of uinput device (1 - 8192, default 2048)"},
-  {"resize", 'r', "NUM", 0, "Set resize factor of full buffer (default 2)"},
   {"priority", 'p', "NUM", 0, "Set scheduler priority (1 - 99, default 20)"},
   {"file", 'f', "FILE", 0, "Logfile for events (default none)"},
   {"verbose", 'v', 0, 0, "Set verbose on (default off)"},
@@ -88,10 +86,6 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     args->polling_rate = strtol(arg, NULL, 10);
     break;
 
-  case 'r':
-    args->resize_factor = strtoull(arg, NULL, 10);
-    break;
-
   case 'p':
     args->priority = strtol(arg, NULL, 10);
     break;
@@ -103,11 +97,13 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     
     /*
      * If buffer size is not specified, calculate buffer size by:
-     * [assumed number of packets per ms] * [time of delay in ms]
+     * [assumed number of events per ms] * [time of delay in ms]
      */
     if (args->buf_size == 0) {
       args->buf_size += 10 * args->delay.tv_sec * 1000;
       args->buf_size += 10 * args->delay.tv_usec / 1000;
+      if (args->buf_size == 0)
+	args->buf_size = 10;
     }
     break;
   }

@@ -26,7 +26,6 @@
 /* Constants. */
 #define MAX_DEVICES              10
 #define VERBOSE_DEFAULT           0
-#define RESIZE_FACTOR_DEFAULT     2
 #define PRIORITY_DEFAULT         20
 #define POLLING_RATE_DEFAULT   2048
 
@@ -37,8 +36,8 @@ struct arguments {
   char *event_file_name[MAX_DEVICES]; // Array of device file names.
   struct timeval delay;	       // Delay to add to each device.
   size_t buf_size;             // Input buffer size (MB).
-  size_t resize_factor;        // Resize factor if buffer full.
   int priority;                // Priority for scheduler.
   unsigned short polling_rate; // Polling rate (same for all devices).
   char *logfile_name;          // Logfile base name.
 };
+
