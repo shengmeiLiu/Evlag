@@ -2,6 +2,8 @@
 
 A simple tool for simulating input lag in Linux.
 
+Copyright 2020 Mark Claypool, WPI
+
 Original source: <https://github.com/filipalac/evlag.git>  
 by Filip Aláč <filipalac@gmail.com>, copyright 2018.
 
