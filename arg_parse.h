@@ -26,4 +26,6 @@
 #include <sys/time.h>
 #include <argp.h>
 
+/* Function prototypes. */
 error_t parse_args(int argc, char **argv, struct arguments *arg);
+

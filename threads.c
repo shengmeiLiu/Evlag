@@ -92,7 +92,7 @@ void *write_event(void *p_arg) {
   FILE *fp = NULL;
 
   /* Prepare logfile. */
-  if (&p_data->p_args->logfile_name) {
+  if (p_data->p_args->logfile_name) {
     char *ev_name; // = libevdev_get_name(p_data->event_dev);
     if (gettimeofday(&current_time, NULL) == 0)
       start = current_time.tv_sec * 1000 + current_time.tv_usec / 1000;
@@ -105,7 +105,7 @@ void *write_event(void *p_arg) {
     else
       ev_name = "other";
 
-    int len = strlen(p_data->p_args->logfile_name) + strlen(ev_name) + 4;
+    int len = strlen(p_data->p_args->logfile_name) + strlen(ev_name) + 6;
     char *file_name = (char *) malloc(len);
     if (!file_name) {
       fprintf(stderr, "write_event(): Unable to malloc().  No logging.");

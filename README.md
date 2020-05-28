@@ -63,11 +63,11 @@ Usage: evlag [OPTION...]
 For example:
 
 ```
-  evlag -h 8192 -l 100 -d /dev/input/event10 -d /dev/input/event6
+  sudo ./evlag -h 8192 -l 100 -d /dev/input/event10 -d /dev/input/event6
 ```
 
 Will generate additional 100 ms of delay on the event10 device (e.g.,
-a mouse and a keyboard) with a polling rate of 8192 Hz.
+a mouse and a keyboard) with a polling rate of 8192 Hz. 
 
 
 ## Output

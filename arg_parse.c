@@ -26,7 +26,7 @@
 #include <libevdev/libevdev.h>
 
 const char *argp_program_version =
-  "evlag 2.2";
+  "evlag 2.3";
 
 const char *argp_program_bug_address =
   "Mark Claypool <claypool@cs.wpi.edu>";
