@@ -33,7 +33,7 @@ const char *argp_program_bug_address =
 
 static char doc[] =
   "\nevlag 2.2 -- A simple tool for simulating input lag.\n"
-  "Don't forget to run as superuser.";
+  "Must be run as superuser.";
 
 static char args_doc[] =
   "--device <FILE> [--device <FILE> ... (max 10)] [--lag <NUM>]";
@@ -42,7 +42,7 @@ static struct argp_option options[] = {
   {"device", 'd', "FILE", 0, "/dev/input/eventX"},
   {"lag", 'l', "NUM", 0, "Set length of delay (ms)"},
   {"buffer", 'b', "NUM", 0, "Set size of buffer (MiB)"},
-  {"Hz", 'h', "NUM", 0, "Set polling rate of uinput device (1 - 8192, default 2048)"},
+  {"Hz", 'h', "NUM", 0, "Set polling rate of real time clock (1 - 8192, default 2048)"},
   {"priority", 'p', "NUM", 0, "Set scheduler priority (1 - 99, default 20)"},
   {"file", 'f', "FILE", 0, "Logfile for events (default none)"},
   {"verbose", 'v', 0, 0, "Set verbose on (default off)"},
