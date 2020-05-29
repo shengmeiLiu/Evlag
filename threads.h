@@ -26,7 +26,7 @@
 #include <libevdev/libevdev-uinput.h>
 
 /*
- * Structure is passed to get_event
+ * Structure is passed to read_event
  * and write_event functions.
  */
 struct thread_data {
@@ -37,9 +37,9 @@ struct thread_data {
 };
 
 /*
- * Receive events, adding delay, and writing to fifo buffer.
+ * Read events, adding delay, and writing to fifo buffer.
  */
-void *get_event(void *p_arg);
+void *read_event(void *p_arg);
 
 /*
  * Pull events from fifo buffer, comparing event time with current

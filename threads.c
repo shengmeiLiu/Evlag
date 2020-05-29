@@ -28,7 +28,7 @@
 static pthread_mutex_t fifo_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t suspend_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-void *get_event(void *p_arg) {
+void *read_event(void *p_arg) {
   struct thread_data *p_data = (struct thread_data *)p_arg;
   int rc = LIBEVDEV_READ_STATUS_SUCCESS;
   int rc_mut;
@@ -42,7 +42,7 @@ void *get_event(void *p_arg) {
     
     /* Handle dropped SYN. */
     if (rc == LIBEVDEV_READ_STATUS_SYNC) {
-      fprintf(stderr, "get_event(): Warning, syn dropped: (%d) %s\n",
+      fprintf(stderr, "read_event(): Warning, syn dropped: (%d) %s\n",
 	      -rc, strerror(-rc));
       
       while (rc == LIBEVDEV_READ_STATUS_SYNC)
@@ -55,15 +55,15 @@ void *get_event(void *p_arg) {
     
     rc_mut = pthread_mutex_lock(&fifo_mutex);
     if (rc_mut != 0)
-      fprintf(stderr, "get_event(): Failed to lock mutex: (%d) %s\n",
+      fprintf(stderr, "read_event(): Failed to lock mutex: (%d) %s\n",
 	      rc, strerror(rc_mut));
     
     if (fifo_push(p_data->p_fifo, &ev) < 0)
-      fprintf(stderr, "get_event(): Failed to fifo_push().");
+      fprintf(stderr, "read_event(): Failed to fifo_push().");
     
     rc_mut = pthread_mutex_unlock(&fifo_mutex);
     if (rc_mut != 0)
-      fprintf(stderr, "get_event(): Failed to unlock mutex: (%d) %s\n",
+      fprintf(stderr, "read_event(): Failed to unlock mutex: (%d) %s\n",
 	      rc, strerror(rc_mut));
     
   } while (rc == LIBEVDEV_READ_STATUS_SYNC ||
@@ -71,10 +71,10 @@ void *get_event(void *p_arg) {
   
   
   if (-rc == ENODEV)
-    fprintf(stderr, "get_event(): Device disconnected: (%d) %s\n",
+    fprintf(stderr, "read_event(): Device disconnected: (%d) %s\n",
 	    -rc, strerror(-rc));
   else
-    fprintf(stderr, "get_event(): Failed to read input device: (%d) %s\n",
+    fprintf(stderr, "read_event(): Failed to read input device: (%d) %s\n",
 	    -rc, strerror(-rc));
   
   exit(EXIT_FAILURE);

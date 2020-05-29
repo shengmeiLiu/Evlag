@@ -2,7 +2,7 @@
 
 A simple tool for simulating input lag in Linux.
 
-Copyright 2020 Mark Claypool, WPI
+Copyright 2020 Mark Claypool, WPI.
 
 Original source: <https://github.com/filipalac/evlag.git>  
 by Filip Aláč <filipalac@gmail.com>, copyright 2018.
@@ -23,7 +23,7 @@ works in userspace through libevdev and uinput.
 
 ## Compile
 
-The libevdev package is needed:
+The `libevdev` package is needed:
 
 ```
   sudo apt install libevdev-lib
@@ -39,7 +39,7 @@ To build:
 ## Usage
 
 EvLag is run as a command line tool, indicating the amount of lag and
-device(s).
+the device(s) to lag.
 
 ```
 Usage: evlag [OPTION...]
@@ -93,9 +93,110 @@ The first row is the header.  The first column is the time the event
 occurred (in milliseconds) relative to the start.
 
 
+## Notes
+
+### Implementation
+
+EvLag uses the Linux event devices (`evdev`) - generic interfaces that
+generalize raw input events from device drivers and makes them
+available through character devices.  These character devices are, by
+default, in the `/dev/input` directory.
+
+EvLag accesses the `evdev` devices via `libevdev`, a user-space
+library that abstracts the IO calls through a type-safe interface.
+
+EvLag uses `pthreads`, creating two threads for each lagged device -
+one for reading from the input device and one for writing to the input
+device.  The read thread pulls input events out of the device, adds
+the appropriate amount of lag, and puts them in a shared FIFO queue.
+The write thread pulls events out of the FIFO queue at the appropriate
+time and writes them to the device.
+
+Psuedo-code for the reader thread:
+
+```
+READER: read_event()
+
+  while (1):
+  
+    libevdev_next_event() // Pull event from queue (blocking)
+    timeradd()            // Add delay to event 
+    lock FIFO
+    enqueue event         // Add to queue for writer
+	unlock FIFO
+```
+
+Pseudo-code for the writer thread:
+
+```
+WRITER: write_event()
+
+  while (1):
+  
+    gettimeofday()
+    if event expired:
+  	  libevdev_uinput_write_event()
+      lock FIFO
+   	  dequeue event        // Get next event from reader
+      unlock FIFO
+    end if
+	
+	pthread_cond_wait()    // block until next interrupt from main()
+
+  end while
+```
+
+The main thread uses the real time clock drivers for Linux, accessed
+through `/dev/rtc`, to get interrupts at the desired polling rate.
+The main thread monitors these by doing a `read()`, which blocks until
+the next interrupt is received.  This allows for a high frequency of
+polling without being CPU bound, say, by polling `gettimeofday()`.
+
+When the main thread does get an interrupt, it signals all the writer
+threads.
+
+```
+MAIN:
+
+  open /dev/rtc
+  ioctl()           // set interrupt/polling rate
+
+  for reach device 
+
+    setup FIFO
+	create reader thread
+	create writer thread
+
+  end for
+  
+  while (1):
+
+    read /dev/rtc
+    pthread_cond_broadcast()
+
+  end while
+```
+
+### Virtual Machines
+
+When using in a virtual machine, some care may need to be taken when
+lagging input depending upon how the input devices are shared with the
+host OS.  For example, with Oracle Virtual Box, with the "mouse
+integration" setting (the default), EvLag does not receive the mouse
+movement commands and so cannot delay (or log) the mouse movement.
+Evlag can still delay (and log) mouse clicks and the keyboard.  The
+"mouse integration" setting can be toggled on and off and when off,
+EvLag works as expected (i.e., the mouse movements can be delayed).
+Note, in this "off" mode, the right control key can be used to
+re-capture the mouse by the host OS.
+
+
 ## Links
 
 Some related links that may be useful:
+
++ EvDev Wiki:
+<https://en.wikipedia.org/wiki/Evdev>
 
 + LibEvDev documentation:
 <https://www.freedesktop.org/software/libevdev/doc/1.4/index.html>

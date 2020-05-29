@@ -130,7 +130,7 @@ int main(int argc, char **argv) {
   } /* End of device(s) for loop. */
   
 
-  /* Create RTC interrupts. */
+  /* Enable RTC interrupts. */
   int fd_rtc = open("/dev/rtc", O_RDONLY);
   
   if (fd_rtc < 0) {
@@ -171,7 +171,7 @@ int main(int argc, char **argv) {
     data[i].p_uinput_dev = uinput_dev[i];
 
     /* Create threads. */
-    rc = pthread_create(&(thr[i][0]), NULL, get_event, &(data[i]));
+    rc = pthread_create(&(thr[i][0]), NULL, read_event, &(data[i]));
     if (rc != 0) {
       fprintf(stderr, "Failed to create thread0: (%d) : %s\n",
 	      rc, strerror(rc));
