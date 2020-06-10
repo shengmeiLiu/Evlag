@@ -23,7 +23,7 @@ works in userspace through libevdev and uinput.
 
 ## Compile
 
-The `libevdev` package is needed:
+The `libevdev` package is needed.  On Ubuntu, install via:
 
 ```
   sudo apt install libevdev-lib
@@ -90,10 +90,34 @@ The logfiles are in comma separated value (CSV) format, with each row:
 ```
 
 The first row is the header.  The first column is the time the event
-occurred (in milliseconds) relative to the start.
+happened (in milliseconds) relative to the start, followed by the
+event type, event code and event value.
 
 
 ## Notes
+
+### Differentiating Devices
+
+Which device is a mouse or keyboard (or other) can be done by trial
+and error, checking each input device (eventX) one by one.
+Alternatively, the Linux program `evtest` might be helpful (on Ubuntu,
+install via `apt install evtest`).  Sample output of `sudo evtest` on
+a Linux box with a mouse (but no keyboard):
+
+```
+No device specified, trying to scan all of /dev/input/event*
+Available devices:
+/dev/input/event0:      Power Button
+/dev/input/event1:      Sleep Button
+/dev/input/event2:      Power Button
+/dev/input/event3:      Video Bus
+/dev/input/event4:      HDA Intel PCH Headphone
+/dev/input/event5:      HDA Intel PCH HDMI/DP,pcm=3
+/dev/input/event6:      PS/2+USB Mouse
+```
+
+In the above example, the mouse is `/dev/input/event6`.
+
 
 ### Implementation
 
