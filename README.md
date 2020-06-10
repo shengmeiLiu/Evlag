@@ -10,20 +10,33 @@ by Filip Aláč <filipalac@gmail.com>, copyright 2018.
 
 ## Overview
 
-This provides a stand-alone program that adds lag to to events from
-input devices.  The additions to this version (over the original) are:
+EvLag provides a stand-alone program that adds lag to input devices in
+Linux.  Features:
 
 1) The ability to add lag to more than one input device at a time.
 
 2) The option to log input events to a log file, one per device.
 
-There is no need to install any additional kernel module, everything
+There is no need to install any additional kernel modules, everything
 works in userspace through libevdev and uinput.
 
+Also included is EvParse - a command line tool for parsing
+log files produced by EvLag.
 
-## Compile
 
-The `libevdev` package is needed.  On Ubuntu, install via:
+## Directories
+
++ `evlag` - the EvLag source code for lagging and logging input.
+
++ `evparse` - the EvParse utility for parsing EvLag log files.
+
++ `logs` - sample log files produced by EvLag.
+
+
+## Compile EvLag
+
+To compile EvLag, the `libevdev` package is needed.  On Ubuntu,
+install via:
 
 ```
   sudo apt install libevdev-lib
@@ -36,7 +49,7 @@ To build:
 ```   
 
 
-## Usage
+## EvLag Usage
 
 EvLag is run as a command line tool, indicating the amount of lag and
 the device(s) to lag.
@@ -70,7 +83,7 @@ Will generate additional 100 ms of delay on the event10 device (e.g.,
 a mouse and a keyboard) with a polling rate of 8192 Hz. 
 
 
-## Output
+## EvLag Output
 
 EvLag can produce logfiles upon request.  This is done by using the
 `-f NAME` flag, with NAME being used as the file prefix and `.log` as
@@ -96,7 +109,7 @@ event type, event code and event value.
 
 ## Notes
 
-### Differentiating Devices
+### Figuring Out Which Device is What
 
 Which device is a mouse or keyboard (or other) can be done by trial
 and error, checking each input device (eventX) one by one.
