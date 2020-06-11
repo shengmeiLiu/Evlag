@@ -6,10 +6,18 @@ and keyboard and output from a computer game.
 
 ## Basic Mouse and Keyboard
 
-keyboard - Keypresses are: `abcdefghijklmnopqurstuvwxyz123456789`
+Note: keyboard input may have [enter] release and maybe ctrl-c
 
 mouse - Mouse actions are: move, 5 left clicks, move, 5 right clicks
 
+mouse-buttons - Mouse buttons: left, right, middle, scroll, side
+bottom, side top
+
+keyboard - Keypresses are: `abcdefghijklmnopqurstuvwxyz123456789`
+
+keyboard-numpad - Keypresses are: `123456789[enter]' on the numpad
+
+keyboard-functions - Keypresses are: `[F1] to [F9]'
 
 ## Computer Game
 
