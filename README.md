@@ -20,7 +20,7 @@ Linux.  Features:
 There is no need to install any additional kernel modules, everything
 works in userspace through libevdev and uinput.
 
-Also included is EvParse - a command line tool for parsing
+Note, also included is EvParse - a command line tool for parsing
 log files produced by EvLag.
 
 
@@ -33,7 +33,7 @@ log files produced by EvLag.
 + `logs` - sample log files produced by EvLag.
 
 
-## Compile EvLag
+## Compile
 
 To compile EvLag, the `libevdev` package is needed.  On Ubuntu,
 install via:
@@ -49,7 +49,7 @@ To build:
 ```   
 
 
-## EvLag Usage
+## Usage
 
 EvLag is run as a command line tool, indicating the amount of lag and
 the device(s) to lag.
@@ -83,7 +83,7 @@ Will generate additional 100 ms of delay on the event10 device (e.g.,
 a mouse and a keyboard) with a polling rate of 8192 Hz. 
 
 
-## EvLag Output
+## Output
 
 EvLag can produce logfiles upon request.  This is done by using the
 `-f NAME` flag, with NAME being used as the file prefix and `.log` as
@@ -241,8 +241,9 @@ Some related links that may be useful:
 + Man pages:
 <https://www.freedesktop.org/software/libevdev/doc/latest/group__init.html>
 
-+ Understand the codes and values in the logfile:
-<http://who-t.blogspot.com/2016/09/understanding-evdev.html>
++ Understand the codes and values in the logfile:  
+<http://who-t.blogspot.com/2016/09/understanding-evdev.html>  
+<https://www.kernel.org/doc/Documentation/input/event-codes.txt>
 
 
 ## License
