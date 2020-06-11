@@ -59,7 +59,7 @@ dkms.conf
 # End of https://www.gitignore.io/api/c
 
 # Custom
-evlag
+evlag/evlag
 *.log
 
 
