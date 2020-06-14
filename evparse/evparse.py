@@ -8,6 +8,8 @@
 # Last signficantly modified: June 2020
 #
 
+import sys
+
 #VERBOSE = True
 VERBOSE = False
 
@@ -19,8 +21,9 @@ VERBOSE = False
 #Options -v verbose
 #Options -h help
 
-FILE = "single-key.log"
+#FILE = "single-key.log"
 #FILE = "basic-keyboard.log"
+FILE = "nt-keyboard.log"
 
 # EvLag output: millisec, event-type, event-code, event-value
 TIME_COL = 0
@@ -35,7 +38,7 @@ VALUE_COL = 3
 def warn(str):
   global line_number
 
-  print("Line:", line_number, " Warning!", str)
+  print("Line:", line_number, " Warning!", str, file=sys.stderr)
 
 # Parse line: millisec, event-type, event-code, event-value
 def parse_line(line):
@@ -277,5 +280,5 @@ line_number = 1
 while (line_number < len(lines)):
 
   if (get_key() == False):
-    warn("main(): Error in get_key(). Exiting.")
-    break;
+    warn("main(): Error in get_key().")
+    
