@@ -16,7 +16,6 @@ VERSION = 1.0
 ###########################################
 # Global constants.
 
-# Global constants.
 # EvLag output: millisec, event-type, event-code, event-value
 TIME_COL = 0
 TYPE_COL = 1
@@ -58,7 +57,7 @@ def parse_line(line):
   event_code = key2str(cell[CODE_COL])
   event_value = val2str(cell[VALU_COL])
 
-  if (g_options.verbose):
+  if (g_options.debug):
     print(line, event_time, event_type, event_code, event_value)
     
   return event_time, event_type, event_code, event_value
@@ -246,8 +245,12 @@ def get_key():
     return False
   g_line_number += 1
 
-  print(time, code, val)
+  if g_options.debug:
+    print(time, code, val)
 
+  if val == 'DOWN' or val == 'UP':
+    g_outfile.write(time + "," + code + "," + val + "\n")
+    
   # Third line is SYN
   time, typ, code, val = parse_line(g_line_number)
   if (typ != 'EV_SYN'):
@@ -259,7 +262,8 @@ def get_key():
   if (g_line_number < len(g_lines)):
     time, typ, code, val = parse_line(g_line_number)
     while (val == 'REPEAT' and g_line_number < len(g_lines)):
-      print(time, code, val)
+      if g_options.debug:
+        print(time, code, val)
       g_line_number += 1
       time, typ, code, val = parse_line(g_line_number)
       if (typ != 'EV_SYN' and code != 'NONE' and code != 'DOWN'):
@@ -275,11 +279,10 @@ def main():
   
   global g_lines
   global g_line_number
+  global g_outfile
   global g_options
 
-  # Setup command line arguments.
-  # https://docs.python.org/3/library/optparse.html
-
+  # Setup command line arguments
   parser = OptionParser(usage="%prog [-h] [-q] {-k|-m} {-i IN} {-o OUT}",
                       version="%prog, v" + str(VERSION))
   parser.add_option("-i", "--in", dest="inname",
@@ -290,13 +293,15 @@ def main():
                     help="parse keyboard output.")
   parser.add_option("-m", action="store_true", dest="mouse",
                     help="parse mouse output.")
+  parser.add_option("-d", "--debug",
+                    action="store_true", dest="debug", default=False,
+                    help="display debug messages")
   parser.add_option("-q", "--quiet",
                     action="store_false", dest="verbose", default=True,
                     help="quiet, not printing status messages to stdout")
-  
   (g_options, args) = parser.parse_args()
 
-  # Check incorrect command line.
+  # Check if command line options correct.
   if len(args) != 0:
     parser.error("Incorrect number of arguments: " + str(len(args)))
   if g_options.mouse is None and g_options.keyboard is None:
@@ -316,12 +321,24 @@ def main():
       print("Mouse: True")
     if g_options.keyboard:
       print("Keyboard: True")
+    if g_options.debug:
+      print("Debug: True")
+    else:
+      print("Debug: False")
 
-  file = open(g_options.inname, 'r')
-  g_lines = file.readlines()
+  # Prepare infile and outfile.      
+  g_outfile = open(g_options.outname, 'w')
+  infile = open(g_options.inname, 'r')
+  g_lines = infile.readlines()
   g_line_number = 1 
 
-  # Repeat until end of file
+  # Header for CSV file.
+  if g_options.keyboard:
+    g_outfile.write("Time,Key,Status" + "\n")
+  if g_options.mouse:
+    g_outfile.write("FIX!")
+
+  # Repeat until consumed all lines.
   while (g_line_number < len(g_lines)):
 
     if g_options.keyboard:
@@ -329,10 +346,6 @@ def main():
         warn("main(): Error in get_key().")
 
 ###########################################
-
-# global variables
-#g_lines = {}
-#g_line_number = 0
 
 if __name__ == "__main__":
     main()
