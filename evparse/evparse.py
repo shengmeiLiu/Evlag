@@ -38,26 +38,30 @@ def warn(str):
   print("Line:", g_line_number, " Warning!", str, file=sys.stderr)
 
 # Parse line: millisec, event-type, event-code, event-value
-def parse_line(line):
+def parse_line(line, is_mouse=False):
 
   global g_lines
   global g_options
 
-  if (line >= len(g_lines)):
+  if line >= len(g_lines):
     warn("parse_line(): past end of file")
     return
   
   cell = g_lines[line].split(',')
-  if (len(cell) != 4):
+  if len(cell) != 4:
     warn("parse_line(): too few cells")
     return 'Error'
   
   event_time = cell[TIME_COL]
   event_type = type2str(cell[TYPE_COL])
-  event_code = key2str(cell[CODE_COL])
-  event_value = val2str(cell[VALU_COL])
+  if is_mouse:
+    event_code = mouse2str(cell[CODE_COL])
+    event_value = str(cell[VALU_COL])
+  else:
+    event_code = key2str(cell[CODE_COL])
+    event_value = val2str(cell[VALU_COL])
 
-  if (g_options.debug):
+  if g_options.debug:
     print(line, event_time, event_type, event_code, event_value)
     
   return event_time, event_type, event_code, event_value
@@ -89,15 +93,11 @@ def type2str(num):
 def mouse2str(num):
 
   switch = {
-    110: 'BTN_MOUSE',
-    110: 'BTN_LEFT',
-    111: 'BTN_RIGHT',
-    112: 'BTN_MIDDLE',
-    113: 'BTN_SIDE',
-    114: 'BTN_EXTRA',
-    115: 'BTN_FORWARD',
-    116: 'BTN_BACK',
-    117: 'BTN_TASK',
+    0: 'x-axis',
+    1: 'y-axis',
+    272: 'BTN_LEFT',
+    273: 'BTN_RIGHT',
+    274: 'BTN_MIDDLE',
   }
 
   return switch.get(int(num))
@@ -218,12 +218,70 @@ def val2str(num):
   return switch.get(int(num), 'UNDEFINED')
 
 ###########################################
-# Get next keyboard input
+# Get next mouse input.
 # Return -1 of all ok, else time, code, val.
-def get_key():
+def get_mouse():
 
   global g_lines
   global g_line_number
+  global g_options
+  global g_outfile
+
+  # Format should be:
+  # 1809, 2, 0, 1
+  # 1809, 0, 0, 0
+  # 1825, 2, 0, 1
+  # 1825, 0, 0, 0
+  
+  # Repeat until hit SYN.
+  done = False
+  did_move = False
+  dx, dy = 0,0
+  while not done:
+
+    time, typ, code, val = parse_line(g_line_number, True)
+    g_line_number += 1
+
+    # Mouse button move.
+    if typ == 'EV_REL':
+      if code == 'x-axis':
+        dx += int(val)
+      else:
+        dy += int(val)
+      did_move = True
+
+    # Mouse button press.
+    if typ == 'EV_MSC':
+
+      # Next line should be EV_KEY.
+      time, typ, code, val = parse_line(g_line_number, True)
+      if typ != 'EV_KEY':
+        warn("get_mouse(): Expected EV_KEY")
+        return False
+      g_line_number += 1
+
+      g_outfile.write(time + "," + code + "," + val2str(int(val)) + "\n")
+
+    # Syn at end of this event sequence.
+    if typ == 'EV_SYN':
+      done = True
+
+  # end of while
+
+  if did_move:
+    g_outfile.write(time + "," + "x-move" + "," + str(dx) + "\n")
+    g_outfile.write(time + "," + "y-move" + "," + str(dy) + "\n")
+
+  return True
+
+###########################################
+# Get next keyboard input.
+# Return -1 of all ok, else time, code, val.
+def get_keyboard():
+
+  global g_lines
+  global g_line_number
+  global g_outfile
   
   # Format should be:
   # 816, 4, 4, 458756
@@ -233,15 +291,15 @@ def get_key():
   time, typ, code, val = parse_line(g_line_number)
 
   # First line is EV_MSC
-  if (typ != 'EV_MSC'):
-    warn("get_key(): Expected EV_MSC")
+  if typ != 'EV_MSC':
+    warn("get_keyboard(): Expected EV_MSC")
     return False
   g_line_number += 1
 
   # Second line is EV_KEY
   time, typ, code, val = parse_line(g_line_number)
-  if (typ != 'EV_KEY'):
-    warn("get_key(): Expected EV_KEY")
+  if typ != 'EV_KEY':
+    warn("get_keyboard(): Expected EV_KEY")
     return False
   g_line_number += 1
 
@@ -253,21 +311,21 @@ def get_key():
     
   # Third line is SYN
   time, typ, code, val = parse_line(g_line_number)
-  if (typ != 'EV_SYN'):
-    warn("get_key(): Expected EV_SYN")
+  if typ != 'EV_SYN':
+    warn("get_keyboard(): Expected EV_SYN")
     return False
   g_line_number += 1
 
   # Handle key repeats
-  if (g_line_number < len(g_lines)):
+  if g_line_number < len(g_lines):
     time, typ, code, val = parse_line(g_line_number)
     while (val == 'REPEAT' and g_line_number < len(g_lines)):
       if g_options.debug:
         print(time, code, val)
       g_line_number += 1
       time, typ, code, val = parse_line(g_line_number)
-      if (typ != 'EV_SYN' and code != 'NONE' and code != 'DOWN'):
-        warn("get_key(): Expected EV_SYN")
+      if typ != 'EV_SYN' and code != 'NONE' and code != 'DOWN':
+        warn("get_keyboard(): Expected EV_SYN")
         return False
       g_line_number += 1
       time, typ, code, val = parse_line(g_line_number)
@@ -336,15 +394,21 @@ def main():
   if g_options.keyboard:
     g_outfile.write("Time,Key,Status" + "\n")
   if g_options.mouse:
-    g_outfile.write("FIX!")
+    g_outfile.write("Time,Action,Val/Status" + "\n")
 
-  # Repeat until consumed all lines.
+  # Repeat until all lines consumed.
   while (g_line_number < len(g_lines)):
 
     if g_options.keyboard:
-      if (get_key() == False):
-        warn("main(): Error in get_key().")
 
+      if get_keyboard() == False:
+        warn("main(): Error in get_keyboard().")
+
+    else:
+
+      if get_mouse() == False:
+        warn("main(): Error in get_mouse().")
+        
 ###########################################
 
 if __name__ == "__main__":

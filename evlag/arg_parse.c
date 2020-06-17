@@ -74,7 +74,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     break;
 
   case 'b':
-    args->buf_size = 1048576 * strtoull(arg, NULL, 10) /
+    args->buf_size = 2097152 * strtoull(arg, NULL, 10) /
       sizeof(struct input_event);
     break;
 

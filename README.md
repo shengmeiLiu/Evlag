@@ -13,9 +13,11 @@ by Filip Aláč <filipalac@gmail.com>, copyright 2018.
 EvLag provides a stand-alone program that adds lag to input devices in
 Linux.  Features:
 
-1) The ability to add lag to more than one input device at a time.
+0) Add a fixed (constant) amount of lag to any Linux input device.
 
-2) The option to log input events to a log file, one per device.
+1) Add lag to more than one input device at a time.
+
+2) Option to log input events to a log file, one per device.
 
 There is no need to install any additional kernel modules, everything
 works in userspace through libevdev and uinput.
@@ -243,8 +245,8 @@ Some related links that may be useful:
 
 + Understand the codes and values in the logfile:  
 <http://who-t.blogspot.com/2016/09/understanding-evdev.html>  
-<https://www.kernel.org/doc/Documentation/input/event-codes.txt>
-
+<https://www.kernel.org/doc/Documentation/input/event-codes.txt>  
+<https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h>
 
 ## License
 

@@ -2,28 +2,31 @@
 
 A parser for EvLag output.
 
+
 ## Usage
 
 Note: EvParse only works for EvLag output for mouse and keyboard
 devices.  Events from other devices (e.g., touchscreen, game
 controller) are logged by EvLag, but EvParse does not parse them.
 
+Note: EvParse handles mouse movements, but for button presses, only
+handles left, right and middle.
+
 
 ## Output
 
 ## Details on EvDev Output
 
-Since evdev is a serialised protocol, simultaneous events are
+Since evdev is a serialized protocol, simultaneous events are
 indicated by a "synchronous" marker.  When several actions happened at
 the same time, there will be a series of events and then a EV_SYN to
-indicate that the preceeding events all belong together.
+indicate that the preceding events all belong together.
 
 EvLag produces a CSV file with the following headers:
 
 ```
 millisec, event-type, event-code, event-value
 ```
-
 
 ### Mouse Example
 
@@ -54,6 +57,7 @@ The output:
 
 means that the left button was pressed and then released.
 
+
 ### Keyboard Example
 
 The output:
@@ -66,3 +70,19 @@ The output:
 
 means the enter key was pressed and then released.  Note a "2" for the
 event value (the 4th number).
+
+
+## To Do
+
+Handle more mouse buttons (e.g., side buttons)
+
+Handle scroll wheel scrolling
+
+I think there are sometimes multiple key events for one SYN.
+This should be handled.
+
+-----------------------------
+
+Happy parsing!
+
+-- Mark
