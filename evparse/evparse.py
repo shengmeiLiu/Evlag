@@ -9,46 +9,46 @@
 #
 
 import sys
+from optparse import OptionParser
 
-#VERBOSE = True
-VERBOSE = False
+VERSION = 1.0
 
-#ToDo:
+###########################################
+# Global constants.
 
-#Input file command line (blah.log)
-#Output file (blah.csv)
-#Options -o file name
-#Options -v verbose
-#Options -h help
-
-#FILE = "single-key.log"
-#FILE = "basic-keyboard.log"
-FILE = "nt-keyboard.log"
-
+# Global constants.
 # EvLag output: millisec, event-type, event-code, event-value
 TIME_COL = 0
 TYPE_COL = 1
 CODE_COL = 2
-VALUE_COL = 3
-  
-####################################
+VALU_COL = 3
+
+###########################################
+# Parse command line.
+def parse_command_line():
+   if len(sys.argv) > 1:
+      usage()
+
+###########################################
 # Utility functions
 
 # Print line number and warning.
 def warn(str):
-  global line_number
+  global g_line_number
 
-  print("Line:", line_number, " Warning!", str, file=sys.stderr)
+  print("Line:", g_line_number, " Warning!", str, file=sys.stderr)
 
 # Parse line: millisec, event-type, event-code, event-value
 def parse_line(line):
 
-  global lines
-  if (line >= len(lines)):
+  global g_lines
+  global g_options
+
+  if (line >= len(g_lines)):
     warn("parse_line(): past end of file")
     return
   
-  cell = lines[line].split(',')
+  cell = g_lines[line].split(',')
   if (len(cell) != 4):
     warn("parse_line(): too few cells")
     return 'Error'
@@ -56,14 +56,14 @@ def parse_line(line):
   event_time = cell[TIME_COL]
   event_type = type2str(cell[TYPE_COL])
   event_code = key2str(cell[CODE_COL])
-  event_value = val2str(cell[VALUE_COL])
+  event_value = val2str(cell[VALU_COL])
 
-  if (VERBOSE):
+  if (g_options.verbose):
     print(line, event_time, event_type, event_code, event_value)
     
   return event_time, event_type, event_code, event_value
 
-####################################
+###########################################
 # EvDev functions
 
 # Convert event type to string.
@@ -218,67 +218,123 @@ def val2str(num):
 
   return switch.get(int(num), 'UNDEFINED')
 
-####################################
+###########################################
 # Get next keyboard input
 # Return -1 of all ok, else time, code, val.
 def get_key():
 
-  global lines
-  global line_number
+  global g_lines
+  global g_line_number
   
   # Format should be:
   # 816, 4, 4, 458756
   # 816, 1, 30, 1
   # 816, 0, 0, 0
-  
-  time, typ, code, val = parse_line(line_number)
+
+  time, typ, code, val = parse_line(g_line_number)
 
   # First line is EV_MSC
   if (typ != 'EV_MSC'):
     warn("get_key(): Expected EV_MSC")
     return False
-  line_number += 1
+  g_line_number += 1
 
   # Second line is EV_KEY
-  time, typ, code, val = parse_line(line_number)
+  time, typ, code, val = parse_line(g_line_number)
   if (typ != 'EV_KEY'):
     warn("get_key(): Expected EV_KEY")
     return False
-  line_number += 1
+  g_line_number += 1
 
   print(time, code, val)
 
   # Third line is SYN
-  time, typ, code, val = parse_line(line_number)
+  time, typ, code, val = parse_line(g_line_number)
   if (typ != 'EV_SYN'):
     warn("get_key(): Expected EV_SYN")
     return False
-  line_number += 1
+  g_line_number += 1
 
   # Handle key repeats
-  if (line_number < len(lines)):
-    time, typ, code, val = parse_line(line_number)
-    while (val == 'REPEAT' and line_number < len(lines)):
+  if (g_line_number < len(g_lines)):
+    time, typ, code, val = parse_line(g_line_number)
+    while (val == 'REPEAT' and g_line_number < len(g_lines)):
       print(time, code, val)
-      line_number += 1
-      time, typ, code, val = parse_line(line_number)
+      g_line_number += 1
+      time, typ, code, val = parse_line(g_line_number)
       if (typ != 'EV_SYN' and code != 'NONE' and code != 'DOWN'):
         warn("get_key(): Expected EV_SYN")
         return False
-      line_number += 1
-      time, typ, code, val = parse_line(line_number)
+      g_line_number += 1
+      time, typ, code, val = parse_line(g_line_number)
 
   return True
   
-####################################
+###########################################
+def main():
+  
+  global g_lines
+  global g_line_number
+  global g_options
 
-file = open(FILE, 'r')
-lines = file.readlines()
+  # Setup command line arguments.
+  # https://docs.python.org/3/library/optparse.html
 
-line_number = 1 
+  parser = OptionParser(usage="%prog [-h] [-q] {-k|-m} {-i IN} {-o OUT}",
+                      version="%prog, v" + str(VERSION))
+  parser.add_option("-i", "--in", dest="inname",
+                    help="read input from IN file.", metavar="IN")
+  parser.add_option("-o", "--out", dest="outname",
+                    help="Write output to OUT file.", metavar="OUT")
+  parser.add_option("-k", action="store_true", dest="keyboard",
+                    help="parse keyboard output.")
+  parser.add_option("-m", action="store_true", dest="mouse",
+                    help="parse mouse output.")
+  parser.add_option("-q", "--quiet",
+                    action="store_false", dest="verbose", default=True,
+                    help="quiet, not printing status messages to stdout")
+  
+  (g_options, args) = parser.parse_args()
 
-while (line_number < len(lines)):
+  # Check incorrect command line.
+  if len(args) != 0:
+    parser.error("Incorrect number of arguments: " + str(len(args)))
+  if g_options.mouse is None and g_options.keyboard is None:
+    parser.error("Must define -m or -k")
+  if not g_options.mouse is None and not g_options.keyboard is None:
+    parser.error("Must define only one of -m or -k")
+  if g_options.inname is None:
+    parser.error("Must define \"-i IN\"")
+  if g_options.outname is None:
+    parser.error("Must define \"-o OUT\"")
 
-  if (get_key() == False):
-    warn("main(): Error in get_key().")
-    
+  if g_options.verbose:
+    print("Verbose: True")
+    print("Input file: %s" % g_options.inname)
+    print("Output file: %s" % g_options.outname)
+    if g_options.mouse:
+      print("Mouse: True")
+    if g_options.keyboard:
+      print("Keyboard: True")
+
+  file = open(g_options.inname, 'r')
+  g_lines = file.readlines()
+  g_line_number = 1 
+
+  # Repeat until end of file
+  while (g_line_number < len(g_lines)):
+
+    if g_options.keyboard:
+      if (get_key() == False):
+        warn("main(): Error in get_key().")
+
+###########################################
+
+# global variables
+#g_lines = {}
+#g_line_number = 0
+
+if __name__ == "__main__":
+    main()
+
+
