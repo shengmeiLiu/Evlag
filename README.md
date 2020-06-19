@@ -46,7 +46,7 @@ To build:
 
 ```
   make
-```   
+```
 
 
 ## Usage
@@ -244,6 +244,18 @@ Some related links that may be useful:
 + Understand the codes and values in the logfile:  
 <http://who-t.blogspot.com/2016/09/understanding-evdev.html>  
 <https://www.kernel.org/doc/Documentation/input/event-codes.txt>
+
+
+## To Do
+
+Partial list of possible next steps/features:
+
++ Add support for game controller to both EvLag and EvParse.
+
++ Measure overhead (mean and variance) for EvLag.
+
++ Add ability to simultaneous delay multiple devices, each with
+different amounts of delay.
 
 
 ## License
