@@ -66,3 +66,9 @@ The output:
 
 means the enter key was pressed and then released.  Note a "2" for the
 event value (the 4th number).
+
+
+### To Do
+
+Parse more keycodes from the mouse and keyboard.  See:
+<https://elinux.org/images/9/93/Evtest.c>

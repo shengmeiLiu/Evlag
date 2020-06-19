@@ -243,18 +243,20 @@ Some related links that may be useful:
 
 + Understand the codes and values in the logfile:  
 <http://who-t.blogspot.com/2016/09/understanding-evdev.html>  
-<https://www.kernel.org/doc/Documentation/input/event-codes.txt>
+<https://www.kernel.org/doc/Documentation/input/event-codes.txt>  
+<https://elinux.org/images/9/93/Evtest.c>
 
 
 ## To Do
 
 Partial list of possible next steps/features:
 
-+ Add support for game controller to both EvLag and EvParse.
++ Add support for game controller (auto detect in EvLag and parse in
+EvParse).
 
 + Measure overhead (mean and variance) for EvLag.
 
-+ Add ability to simultaneous delay multiple devices, each with
++ Provide ability to simultaneous delay multiple devices, each with
 different amounts of delay.
 
 
