@@ -70,11 +70,11 @@ Event: 11
 
 This folder includes two sample files:
 
-+ `evtest.sample` - a list of devices as reported by `evtest` on an
-  example Linux laptop
++ `evtest.sample.{1,2}` - a list of devices as reported by `evtest` on
+  an example Linux laptop.
 
-+ `devices.sample` - the contents of `/proc/bus/input/devices` on that
-  same laptop
++ `devices.sample.{1,2}` - the contents of `/proc/bus/input/devices`
+  on that same laptop.
 
 
 --------------------------
@@ -82,5 +82,3 @@ This folder includes two sample files:
 Happy detecting!
 
 -- Mark
-
-

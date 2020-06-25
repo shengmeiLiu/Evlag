@@ -8,11 +8,12 @@
 # Script to detect input device for mouse or keyboard.
 # 
 
-VERSION=v1.0
+VERSION=v1.1
 
 # Device input file.
-DEV_FILE=/proc/bus/input/devices
-#DEV_FILE=devices.sample
+#DEV_FILE=/proc/bus/input/devices
+#DEV_FILE=devices.sample.1
+DEV_FILE=devices.sample.2
 
 # Defaults to verbose.
 VERBOSE=1
@@ -50,26 +51,26 @@ if [ "$VERBOSE" = 1 ] ; then
   echo "Device: '$1'"
 fi
 
-# Find matching device, numbered starting at 0.
-names=$(cat $DEV_FILE | \
-  grep 'Name' | \
-  cat -n)
-line=$(echo "$names" | \
-  grep 'Name' | \
-  grep -i "$1" | \
-  head -n 1)
+# Find first match for str.
+match=$(cat $DEV_FILE | \
+  grep "$1" -A 5 | \
+  head -n 5 | \
+  tail -n 1)
 
-# Parse number.
-num=$(echo $line | cut -f1 -d' ')
-num="$(($num-1))"
+# Parse out device event.
+words=($(echo $match | sed 's/\s/\n/g'))
+event=($(
+  for i in "${words[@]}" ; do  
+    echo $i | grep event
+  done
+))
 
 if [ "$VERBOSE" = 1 ] ; then
-  echo "Names:"
-  echo "$names"
-  echo "Match: " "$line"
-  echo "Event: $num"
+  echo "Match: " "$match"
+  echo "Event: $event"
 fi
 
-echo "/dev/input/event$num"
+# Display string.
+echo "/dev/input/$event"
 
 exit 0
