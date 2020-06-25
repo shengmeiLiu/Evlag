@@ -1,0 +1,33 @@
+No device specified, trying to scan all of /dev/input/event*
+Not running as root, no devices may be available.
+Available devices:
+/dev/input/event0:	Lid Switch
+/dev/input/event1:	Sleep Button
+/dev/input/event2:	Sleep Button
+/dev/input/event3:	Power Button
+/dev/input/event4:	Power Button
+/dev/input/event5:	AT Translated Set 2 keyboard
+/dev/input/event6:	ETPS/2 Elantech Touchpad
+/dev/input/event7:	Logitech Gaming Mouse G502
+/dev/input/event8:	Logitech Gaming Mouse G502 Keyboard
+/dev/input/event9:	Logitech Gaming Mouse G502 Consumer Control
+/dev/input/event10:	Logitech Gaming Mouse G502 System Control
+/dev/input/event11:	GIGABYTE USB-HID Keyboard
+/dev/input/event12:	GIGABYTE USB-HID Keyboard Mouse
+/dev/input/event13:	GIGABYTE USB-HID Keyboard System Control
+/dev/input/event14:	GIGABYTE USB-HID Keyboard Consumer Control
+/dev/input/event15:	GIGABYTE USB-HID Keyboard
+/dev/input/event16:	GIGABYTE USB-HID Keyboard
+/dev/input/event17:	GIGABYTE USB-HID Keyboard Wireless Radio Control
+/dev/input/event18:	USB2.0 HD UVC WebCam: USB2.0 HD
+/dev/input/event19:	Video Bus
+/dev/input/event20:	Video Bus
+/dev/input/event21:	HDA Intel PCH Headphone
+/dev/input/event22:	HDA Intel PCH HDMI/DP,pcm=3
+/dev/input/event23:	HDA Intel PCH HDMI/DP,pcm=7
+/dev/input/event24:	HDA Intel PCH HDMI/DP,pcm=8
+/dev/input/event25:	HDA Intel PCH HDMI/DP,pcm=9
+/dev/input/event26:	HDA Intel PCH HDMI/DP,pcm=10
+/dev/input/event27:	HDA NVidia HDMI/DP,pcm=3
+/dev/input/event28:	HDA NVidia HDMI/DP,pcm=7
+Select the device event number [0-28]: 
