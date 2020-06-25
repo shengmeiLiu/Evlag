@@ -11,9 +11,9 @@
 VERSION=v1.1
 
 # Device input file.
-#DEV_FILE=/proc/bus/input/devices
+DEV_FILE=/proc/bus/input/devices
 #DEV_FILE=devices.sample.1
-DEV_FILE=devices.sample.2
+#DEV_FILE=devices.sample.2
 
 # Defaults to verbose.
 VERBOSE=1
