@@ -30,6 +30,8 @@ log files produced by EvLag.
 
 + `evparse` - the EvParse utility for parsing EvLag log files.
 
++ `evdetect` - the EvDetect utility number finding a particular device.
+
 + `logs` - sample log files produced by EvLag.
 
 

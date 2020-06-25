@@ -8,7 +8,19 @@ Note: EvParse only works for EvLag output for mouse and keyboard
 devices.  Events from other devices (e.g., touchscreen, game
 controller) are logged by EvLag, but EvParse does not parse them.
 
+```
+Usage: evparse.py [-h] [-q] {-k|-m} {-i IN} {-o OUT}
 
+Options:
+  --version          show program's version number and exit
+  -h, --help         show this help message and exit
+  -i IN, --in=IN     read input from IN file.
+  -o OUT, --out=OUT  Write output to OUT file.
+  -k                 parse keyboard output.
+  -m                 parse mouse output.
+  -d, --debug        display debug messages
+  -q, --quiet        quiet, not printing status messages to stdout
+```
 ## Output
 
 ## Details on EvDev Output
@@ -72,3 +84,4 @@ event value (the 4th number).
 
 Parse more keycodes from the mouse and keyboard.  See:
 <https://elinux.org/images/9/93/Evtest.c>
+

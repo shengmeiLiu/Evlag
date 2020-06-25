@@ -1,6 +1,3 @@
-No device specified, trying to scan all of /dev/input/event*
-Not running as root, no devices may be available.
-Available devices:
 /dev/input/event0:	Lid Switch
 /dev/input/event1:	Sleep Button
 /dev/input/event2:	Sleep Button
@@ -30,4 +27,3 @@ Available devices:
 /dev/input/event26:	HDA Intel PCH HDMI/DP,pcm=10
 /dev/input/event27:	HDA NVidia HDMI/DP,pcm=3
 /dev/input/event28:	HDA NVidia HDMI/DP,pcm=7
-Select the device event number [0-28]: 
