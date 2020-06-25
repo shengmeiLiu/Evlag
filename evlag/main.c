@@ -158,7 +158,7 @@ int main(int argc, char **argv) {
 
     /* Create fifo buffer. */
     if (fifo_create(&(fifo[i]), args.buf_size) == NULL) {
-      fprintf(stderr, "Failed to allocate fifo buffer %d : %s\n",
+      fprintf(stderr, "Failed to allocate fifo buffer (%d) : %s\n",
 	      i, strerror(errno));
       exit(EXIT_FAILURE);
     }
@@ -215,9 +215,8 @@ int main(int argc, char **argv) {
   return EXIT_FAILURE;
 }
 
-// Called explicitly to catch ctrl-c, so exit when done.                        
-void do_shut_down(int sig) {                                                      
-                                                                                
+// Called explicitly to catch ctrl-c, so exit when done.
+void do_shut_down(int sig) {
   fcloseall();
-  exit(sig);                                                                    
+  exit(sig);
 }

@@ -99,7 +99,8 @@ int fifo_push(struct fifo_header *p_f, const struct input_event *p_input) {
   if (p_f->head + 1 == p_f->tail ||
       (p_f->head + 1 == p_f->size && p_f->tail == 0)) {
     
-    fprintf(stderr, "Warning! fifo_push(): Fifo buffer full.\n");
+    fprintf(stderr, "Warning! fifo_push(): Fifo buffer full (%d).\n",
+	    (int) p_f->size);
     if (fifo_realloc(p_f) == NULL) {
       fprintf(stderr, "Error! fifo_push(): Failed to reallocate buffer.");
       return -1;

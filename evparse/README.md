@@ -12,6 +12,19 @@ controller) are logged by EvLag, but EvParse does not parse them.
 Note: EvParse handles mouse movements, but for button presses, only
 handles left, right and middle.
 
+```
+Usage: evparse.py [-h] [-q] {-k|-m} {-i IN} {-o OUT}
+
+Options:
+  --version          show program's version number and exit
+  -h, --help         show this help message and exit
+  -i IN, --in=IN     read input from IN file.
+  -o OUT, --out=OUT  Write output to OUT file.
+  -k                 parse keyboard output.
+  -m                 parse mouse output.
+  -d, --debug        display debug messages
+  -q, --quiet        quiet, not printing status messages to stdout
+```
 
 ## Output
 
@@ -74,12 +87,12 @@ event value (the 4th number).
 
 ## To Do
 
-Handle more mouse buttons (e.g., side buttons)
+Handle more mouse buttons (e.g., side buttons).
 
-Handle scroll wheel scrolling
+Handle scroll wheel scrolling.
 
-I think there are sometimes multiple key events for one SYN.
-This should be handled.
+I think there are sometimes multiple key events for one SYN.  This
+should be handled.
 
 -----------------------------
 

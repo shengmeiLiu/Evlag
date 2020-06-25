@@ -26,13 +26,13 @@
 #include <libevdev/libevdev.h>
 
 const char *argp_program_version =
-  "evlag 2.4";
+  "evlag 2.5";
 
 const char *argp_program_bug_address =
   "Mark Claypool <claypool@cs.wpi.edu>";
 
 static char doc[] =
-  "\nevlag 2.2 -- A simple tool for simulating input lag.\n"
+  "\nevlag -- A simple tool for simulating input lag.\n"
   "Must be run as superuser.";
 
 static char args_doc[] =
@@ -41,7 +41,7 @@ static char args_doc[] =
 static struct argp_option options[] = {
   {"device", 'd', "FILE", 0, "/dev/input/eventX"},
   {"lag", 'l', "NUM", 0, "Set length of delay (ms)"},
-  {"buffer", 'b', "NUM", 0, "Set size of buffer (MiB)"},
+  {"buffer", 'b', "NUM", 0, "Set size of buffer (events)"},
   {"Hz", 'h', "NUM", 0, "Set polling rate of real time clock (1 - 8192, default 2048)"},
   {"priority", 'p', "NUM", 0, "Set scheduler priority (1 - 99, default 20)"},
   {"file", 'f', "FILE", 0, "Logfile for events (default none)"},
@@ -74,8 +74,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     break;
 
   case 'b':
-    args->buf_size = 2097152 * strtoull(arg, NULL, 10) /
-      sizeof(struct input_event);
+    args->buf_size = strtoull(arg, NULL, 10);
     break;
 
   case 'v':
@@ -100,10 +99,10 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
      * [assumed number of events per ms] * [time of delay in ms]
      */
     if (args->buf_size == 0) {
-      args->buf_size += 10 * args->delay.tv_sec * 1000;
-      args->buf_size += 10 * args->delay.tv_usec / 1000;
+      args->buf_size += 40 * args->delay.tv_sec * 1000;
+      args->buf_size += 40 * args->delay.tv_usec / 1000;
       if (args->buf_size == 0)
-	args->buf_size = 10;
+	args->buf_size = 40;
     }
     break;
   }

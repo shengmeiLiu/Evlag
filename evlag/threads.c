@@ -93,17 +93,12 @@ void *write_event(void *p_arg) {
 
   /* Prepare logfile. */
   if (p_data->p_args->logfile_name) {
-    char *ev_name; // = libevdev_get_name(p_data->event_dev);
+
     if (gettimeofday(&current_time, NULL) == 0)
       start = current_time.tv_sec * 1000 + current_time.tv_usec / 1000;
-    
-    if (libevdev_has_event_type(p_data->p_event_dev, EV_REL) &&
-	libevdev_has_event_code(p_data->p_event_dev, EV_KEY, BTN_LEFT))
-      ev_name = "mouse";
-    else if (libevdev_has_event_type(p_data->p_event_dev, EV_KEY))
-      ev_name = "keyboard";
-    else
-      ev_name = "other";
+
+    /* Get device name. */
+    char *ev_name = strrchr(libevdev_get_name(p_data->p_event_dev), ' ') + 1;
 
     int len = strlen(p_data->p_args->logfile_name) + strlen(ev_name) + 6;
     char *file_name = (char *) malloc(len);

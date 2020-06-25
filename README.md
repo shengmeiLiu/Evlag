@@ -32,6 +32,8 @@ log files produced by EvLag.
 
 + `evparse` - the EvParse utility for parsing EvLag log files.
 
++ `evdetect` - the EvDetect utility number finding a particular device.
+
 + `logs` - sample log files produced by EvLag.
 
 
@@ -48,7 +50,7 @@ To build:
 
 ```
   make
-```   
+```
 
 
 ## Usage
@@ -246,7 +248,21 @@ Some related links that may be useful:
 + Understand the codes and values in the logfile:  
 <http://who-t.blogspot.com/2016/09/understanding-evdev.html>  
 <https://www.kernel.org/doc/Documentation/input/event-codes.txt>  
-<https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h>
+<https://elinux.org/images/9/93/Evtest.c>
+
+
+## To Do
+
+Partial list of possible next steps/features:
+
++ Add support for game controller (auto detect in EvLag and parse in
+EvParse).
+
++ Measure overhead (mean and variance) for EvLag.
+
++ Provide ability to simultaneous delay multiple devices, each with
+different amounts of delay.
+
 
 ## License
 
