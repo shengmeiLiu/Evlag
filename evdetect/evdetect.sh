@@ -8,24 +8,27 @@
 # Script to detect input device for mouse or keyboard.
 # 
 
-VERSION=v1.1
+VERSION=v1.2
 
 # Device input file.
 DEV_FILE=/proc/bus/input/devices
 #DEV_FILE=devices.sample.1
 #DEV_FILE=devices.sample.2
 
-# Defaults to verbose.
+# Devices: Number of lines after "Name" for the "Handlers".
+HANDLERS_OFFSET=6
+
+# Defaults to verbose (-q for quiet).
 VERBOSE=1
 
 # Print usage message and quit.
 function usage {
   echo "EvDetect ($VERSION) - detect event number for particular device"
   echo "  usage: evdetect.sh [-qh] {str}"
-  echo "         str - device string to match"
+  echo "         str - device string to match (case sensitive)"
   echo "         -q quiet"
   echo "         -h this help message"
-  echo "  example: evdetect.sh -q \"Gaming Keyboard\""
+  echo "  example: evdetect.sh -q \"Keyboard\""
   exit 0
 }
 
@@ -53,7 +56,7 @@ fi
 
 # Find first match for str.
 match=$(cat $DEV_FILE | \
-  grep "$1" -A 5 | \
+  grep "$1" -A $HANDLERS_OFFSET | \
   head -n 5 | \
   tail -n 1)
 
