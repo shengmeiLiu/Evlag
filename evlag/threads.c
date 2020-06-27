@@ -19,6 +19,7 @@
  */
 
 #include "threads.h"
+#include "events.h"
 
 #include <string.h>
 #include <unistd.h>
@@ -88,20 +89,17 @@ void *write_event(void *p_arg) {
   int have_event = 0;
   int rc_fifo = 0;    
   int rc = 0;
-  int start = 0;
   FILE *fp = NULL;
 
   /* Prepare logfile. */
   if (p_data->p_args->logfile_name) {
 
-    if (gettimeofday(&current_time, NULL) == 0)
-      start = current_time.tv_sec * 1000 + current_time.tv_usec / 1000;
-
     /* Get device name. */
     char *ev_name = strrchr(libevdev_get_name(p_data->p_event_dev), ' ') + 1;
-
     int len = strlen(p_data->p_args->logfile_name) + strlen(ev_name) + 6;
     char *file_name = (char *) malloc(len);
+
+    /* Open. */
     if (!file_name) {
       fprintf(stderr, "write_event(): Unable to malloc().  No logging.");
       fp = NULL;
@@ -113,9 +111,6 @@ void *write_event(void *p_arg) {
 		file_name);
       free(file_name);
     }
-
-    if (fp)
-      fprintf(fp, "millisec, event-type, event-code, event-value\n");
 
   } // Opened logfile.
 
@@ -141,13 +136,31 @@ void *write_event(void *p_arg) {
 	  /* Write event to logfile. */
 	  if (fp) {
 
-	    int now = ev.time.tv_sec * 1000 + ev.time.tv_usec / 1000;
-	    fprintf(fp, "%d, %d, %d, %d\n",
-		    now - start,
-		    ev.type,
-		    ev.code,
-		    ev.value);
-	  }
+	    if (ev.type == EV_SYN) {
+	      fprintf(fp, "time %ld.%06ld, -------------- %s ------------\n",
+		      ev.time.tv_sec, ev.time.tv_usec,
+		      ev.code ? "Config Sync" : "Report Sync" );
+	    } else if (ev.type == EV_MSC &&
+		       (ev.code == MSC_RAW ||
+			ev.code == MSC_SCAN)) {
+	      fprintf(fp, "Event: time %ld.%06ld, type %d (%s), code %d (%s), value %02x\n",
+		      ev.time.tv_sec, ev.time.tv_usec,
+		      ev.type, events[ev.type] ? events[ev.type] : "?",
+		      ev.code,
+		      names[ev.type] ? (names[ev.type][ev.code] ?
+					names[ev.type][ev.code] : "?") : "?",
+		      ev.value);
+	    } else {
+	      fprintf(fp, "Event: time %ld.%06ld, type %d (%s), code %d (%s), value %d\n",
+		      ev.time.tv_sec, ev.time.tv_usec, ev.type,
+		      events[ev.type] ? events[ev.type] : "?",
+		      ev.code,
+		      names[ev.type] ?
+		      (names[ev.type][ev.code] ? names[ev.type][ev.code] : "?") : "?",
+		       ev.value);
+	    }	
+
+	  } // End if (fp).
 
 	  have_event = 0;
 	}
@@ -188,6 +201,6 @@ void *write_event(void *p_arg) {
       fprintf(stderr, "write_event(): Failed to unlock mutex: %s\n",
 	      strerror(rc));
 
-  } /* End of while (1) */
+  } // End of while (1).
 
 }

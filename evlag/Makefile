@@ -5,7 +5,7 @@
 CC = gcc
 TARGET = evlag
 
-CFLAGS = -Wall -pedantic -O3 -std=gnu11 $(shell pkg-config --cflags libevdev)
+CFLAGS = -Wall -O3 -std=gnu11 $(shell pkg-config --cflags libevdev)
 CFLAGS := $(CFLAGS) -I/usr/include/libevdev 
 CFLAGS := $(CFLAGS) -DDEBUG
 LIBS = -pthread
