@@ -5,28 +5,46 @@ A parser for EvLag output.
 
 ## Usage
 
-Note: EvParse only works for EvLag output for mouse and keyboard
-devices.  Events from other devices (e.g., touchscreen, game
-controller) are logged by EvLag, but EvParse does not parse them.
-
-Note: EvParse handles mouse movements, but for button presses, only
-handles left, right and middle.
-
 ```
-Usage: evparse.py [-h] [-q] {-k|-m} {-i IN} {-o OUT}
+Usage: evparse.py [-h] [-q] {-i IN} {-o OUT}
 
 Options:
   --version          show program's version number and exit
   -h, --help         show this help message and exit
   -i IN, --in=IN     read input from IN file.
   -o OUT, --out=OUT  Write output to OUT file.
-  -k                 parse keyboard output.
-  -m                 parse mouse output.
   -d, --debug        display debug messages
   -q, --quiet        quiet, not printing status messages to stdout
+
 ```
 
-## Output
+For example:
+
+```
+ evparse.py -i ../logs/nt-mouse.log -o nt-mouse.parsed
+```
+
+```
+Verbose: True
+Input file: ../logs/nt-mouse.log
+Output file: nt-mouse.parsed
+Debug: False
+```
+
+Creating  the vile `nt-mouse.parsed` that looks like:
+
+```
+relative axis event at 0.001368, REL_X , X val: -1
+synchronization event at 0.001368, SYN_REPORT
+relative axis event at 0.001369, REL_Y , Y val: 1
+synchronization event at 0.001369, SYN_REPORT
+relative axis event at 0.001371, REL_X , X val: -1
+synchronization event at 0.001371, SYN_REPORT
+relative axis event at 0.001374, REL_X , X val: -1
+relative axis event at 0.001374, REL_Y , Y val: 1
+synchronization event at 0.001374, SYN_REPORT
+...
+```
 
 ## Details on EvDev Output
 
