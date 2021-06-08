@@ -1,7 +1,7 @@
 /*
  * evlag
  *
- * Copyright 2020 Mark Claypool, WPI
+ * Copyright 2021 Mark Claypool, WPI
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,20 +32,20 @@ const char *argp_program_bug_address =
   "Mark Claypool <claypool@cs.wpi.edu>";
 
 static char doc[] =
-  "\nevlag -- A simple tool for simulating input lag.\n"
+  "\nevlag -- A simple tool for lagging and moniotring input.\n"
   "Must be run as superuser.";
 
 static char args_doc[] =
   "--device <FILE> [--device <FILE> ... (max 10)] [--lag <NUM>]";
 
 static struct argp_option options[] = {
-  {"device", 'd', "FILE", 0, "/dev/input/eventX"},
-  {"lag", 'l', "NUM", 0, "Set length of delay (ms)"},
-  {"buffer", 'b', "NUM", 0, "Set size of buffer (events)"},
-  {"Hz", 'h', "NUM", 0, "Set polling rate of real time clock (1 - 8192, default 2048)"},
-  {"priority", 'p', "NUM", 0, "Set scheduler priority (1 - 99, default 20)"},
+  {"device", 'd', "FILE", 0, "Input device /dev/input/eventX to lag"},
+  {"lag", 'l', "NUM", 0, "Length of delay (ms)"},
+  {"buffer", 'b', "NUM", 0, "Size of buffer (in events)"},
+  {"Hz", 'h', "NUM", 0, "Polling rate of real time clock (1 - 8192, default 2048)"},
+  {"priority", 'p', "NUM", 0, "Scheduler priority (1 - 99, default 20)"},
   {"file", 'f', "FILE", 0, "Logfile for events (default none)"},
-  {"verbose", 'v', 0, 0, "Set verbose on (default off)"},
+  {"verbose", 'v', 0, 0, "Verbose on (default off)"},
   {0}
 };
 

@@ -5,6 +5,8 @@ A parser for EvLag output.
 
 ## Usage
 
+Note: requires the evdev package (`pip install evdev`).
+
 ```
 Usage: evparse.py [-h] [-q] {-i IN} {-o OUT}
 
@@ -31,7 +33,7 @@ Output file: nt-mouse.parsed
 Debug: False
 ```
 
-Creating  the vile `nt-mouse.parsed` that looks like:
+Creating the file `nt-mouse.parsed` that looks like:
 
 ```
 relative axis event at 0.001368, REL_X , X val: -1
@@ -65,9 +67,9 @@ The output (`#` and following characters are comments and not in the
 EvLag output file):
 
 ```
-1.3, 0002, 0000, 0001     # EV_REL / REL_X   1
-1.3, 0002, 0001, -006     # EV_REL / REL_Y  -6
-1.3, 0000, 0000, 0000     # EV_SYN 
+13, 0002, 0000, 0001     # EV_REL / REL_X   1
+13, 0002, 0001, -006     # EV_REL / REL_Y  -6
+13, 0000, 0000, 0000     # EV_SYN 
 
 ```
 
@@ -78,12 +80,12 @@ column) are all the same since they happened at the same time.
 The output:
 
 ```
-1.3, 0004, 0004, 589825  # EV_MSC / MSC_SCAN             589825
-1.3, 0001, 0110, 0001    # EV_KEY / BTN_LEFT             1
-1.3, 0000, 0000, 0000    # EV_SYN 
-1.4, 0004, 0004, 589825  # EV_MSC / MSC_SCAN             589825
-1.4, 0001, 0110, 0000    # EV_KEY / BTN_LEFT             0
-1.4, 0000, 0000, 0000    # EV_SYN 
+23, 0004, 0004, 589825  # EV_MSC / MSC_SCAN             589825
+23, 0001, 0110, 0001    # EV_KEY / BTN_LEFT             1
+23, 0000, 0000, 0000    # EV_SYN 
+34, 0004, 0004, 589825  # EV_MSC / MSC_SCAN             589825
+34, 0001, 0110, 0000    # EV_KEY / BTN_LEFT             0
+34, 0000, 0000, 0000    # EV_SYN 
 ```
 
 means that the left button was pressed and then released.
@@ -94,23 +96,20 @@ means that the left button was pressed and then released.
 The output:
 
 ```
-1.1, 0004, 0004, 458792    # EV_MSC / MSC_SCAN             458792
-1.1, 0001, 001c, 0001      # EV_KEY / KEY_ENTER            1
-1.1, 0000, 0000, 0000      # EV_SYN 
+51, 0004, 0004, 458792    # EV_MSC / MSC_SCAN             458792
+51, 0001, 0028, 0001      # EV_KEY / KEY_ENTER            1
+51, 0000, 0000, 0000      # EV_SYN 
 ```
 
-means the enter key was pressed and then released.  Note a "2" for the
-event value (the 4th number).
+means the enter key was pressed.
 
 
-## To Do
+## Example Logs
 
-Handle more mouse buttons (e.g., side buttons).
+The above example logs are provided in this directory:
 
-Handle scroll wheel scrolling.
-
-I think there are sometimes multiple key events for one SYN.  This
-should be handled.
++ `example-keyboard.log`
++ `example-mouse.log`
 
 -----------------------------
 

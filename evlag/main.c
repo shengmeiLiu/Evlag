@@ -1,7 +1,7 @@
 /*
  * evlag
  *
- * Copyright 2020 Mark Claypool, WPI
+ * Copyright 2021 Mark Claypool, WPI
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,17 +71,13 @@ int main(int argc, char **argv) {
     printf("Polling rate: %d\n", args.polling_rate);
     printf("Logfile: %s\n", args.logfile_name ? args.logfile_name : "(none)");
   }
-  
 
   /* Set scheduler priority. */
   struct sched_param sched;
   sched.sched_priority = args.priority;
-  
-  if (sched_setscheduler(0, SCHED_FIFO, &sched) < 0) {
-    perror("Failed to set scheduler, check your privilege");
-  }
+  if (sched_setscheduler(0, SCHED_FIFO, &sched) < 0)
+    perror("Failed to set scheduler, check privilege (sudo)");
 
-  
   /* Open device(s). */
   int fd_event[MAX_DEVICES];
   struct libevdev *event_dev[MAX_DEVICES];
@@ -109,7 +105,6 @@ int main(int argc, char **argv) {
       exit(EXIT_FAILURE);
     }
 
-
     /* Create uinput clone of device. */
     fd_uinput[i] = open("/dev/uinput", O_WRONLY);
   
@@ -129,7 +124,6 @@ int main(int argc, char **argv) {
 
   } /* End of device(s) for loop. */
   
-
   /* Enable RTC interrupts. */
   int fd_rtc = open("/dev/rtc", O_RDONLY);
   
@@ -163,7 +157,6 @@ int main(int argc, char **argv) {
       exit(EXIT_FAILURE);
     }
   
-  
     /* Setup data for threads. */
     data[i].p_fifo = &(fifo[i]);
     data[i].p_args = &args;
@@ -188,12 +181,12 @@ int main(int argc, char **argv) {
   } /* End of create threads loop. */
   
 
-  // Catch control-C (SIGINT) and gracefully shut down                          
-  struct sigaction new_action;                                                  
+  /* Catch control-C (SIGINT) and gracefully shut down. */
+  struct sigaction new_action;
   new_action.sa_handler = do_shut_down;
   sigemptyset (&new_action.sa_mask);
   new_action.sa_flags = 0;
-  if (sigaction(SIGINT, &new_action, NULL) == -1)                               
+  if (sigaction(SIGINT, &new_action, NULL) == -1)
     fprintf(stderr, "Error catching Ctrl-C signal");
   
   /* Read from RTC device, notifiying all threads each poll. */
@@ -215,7 +208,7 @@ int main(int argc, char **argv) {
   return EXIT_FAILURE;
 }
 
-// Called explicitly to catch ctrl-c, so exit when done.
+/* Called explicitly to catch ctrl-c, so exit when done. */
 void do_shut_down(int sig) {
   fcloseall();
   exit(sig);

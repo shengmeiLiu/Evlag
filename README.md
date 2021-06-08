@@ -1,29 +1,29 @@
 # EvLag
 
-A simple tool for simulating input lag in Linux.
+A simple tool for adding lag and monitoring device input in Linux.
 
-Copyright 2020 Mark Claypool, WPI.
+Copyright 2021 Mark Claypool, WPI.
 
-Original source: <https://github.com/filipalac/evlag.git>  
-by Filip Aláč <filipalac@gmail.com>, copyright 2018.
+Based on initial code (<https://github.com/filipalac/evlag.git>) by
+Filip Aláč <filipalac@gmail.com>, copyright 2018.
 
 
 ## Overview
 
-EvLag provides a stand-alone program that adds lag to input devices in
-Linux.  Features:
+*EvLag* provides a stand-alone program that adds lag and monitors
+input to devices in Linux.  Features:
 
 0) Add a fixed (constant) amount of lag to any Linux input device.
 
 1) Add lag to more than one input device at a time.
 
-2) Option to log input events to a log file, one per device.
+2) Option to log all input events to a file, one file per device.
 
-There is no need to install any additional kernel modules, everything
-works in userspace through libevdev and uinput.
+There is no need to install any additional kernel modules - everything
+works in userspace through `libevdev` and `uinput`.
 
-Note, also included is EvParse - a command line tool for parsing
-log files produced by EvLag.
+The EvLag repository also includes *EvParse*, *EvDetect* and sample
+log files.  See below for details.
 
 
 ## Directories
@@ -40,13 +40,13 @@ log files produced by EvLag.
 ## Compile
 
 To compile EvLag, the `libevdev` package is needed.  On Ubuntu,
-install via:
+this can be installed via:
 
 ```
   sudo apt install libevdev-lib
 ```
 
-To build:
+To build EvLag:
 
 ```
   make
@@ -62,10 +62,10 @@ the device(s) to lag.
 Usage: evlag [OPTION...]
             --lag <NUM> --device <FILE> [--device <FILE> ... (max 10)]
 
-  -b, --buffer=NUM           Set size of buffer (MiB)
-  -d, --device=FILE          /dev/input/eventX
+  -b, --buffer=NUM           Set size of buffer (in events)
+  -d, --device=FILE          Input device /dev/input/eventX to lag
   -f, --file=FILE            Logfile for events (default none)
-  -h, --Hz=NUM               Set polling rate of uinput device (1 - 8192,
+  -h, --Hz=NUM               Set polling rate of input device (1 - 8192,
                              default 2048)
   -l, --lag=NUM              Set length of delay (ms)
   -p, --priority=NUM         Set scheduler priority (1 - 99, default 20)
@@ -91,14 +91,8 @@ a mouse and a keyboard) with a polling rate of 8192 Hz.
 
 EvLag can produce logfiles upon request.  This is done by using the
 `-f NAME` flag, with NAME being used as the file prefix and `.log` as
-the suffix.  This creates a logfile for each device, detecting the
-device type as one of:
-
-+ mouse
-+ keyboard
-+ other
-
-The device type is used as a prefix in the name.
+the suffix.  This creates a logfile for each device, using
+libevdev_get_name as the device type used as a prefix in the name.
 
 The logfiles are in comma separated value (CSV) format, with each row:
 
@@ -160,11 +154,13 @@ READER: read_event()
 
   while (1):
   
-    libevdev_next_event() // Pull event from queue (blocking)
+    libevdev_next_event() // Pull event from device (blocking)
     timeradd()            // Add delay to event 
     lock FIFO
     enqueue event         // Add to queue for writer
 	unlock FIFO
+
+  end while
 ```
 
 Pseudo-code for the writer thread:
@@ -176,13 +172,13 @@ WRITER: write_event()
   
     gettimeofday()
     if event expired:
-  	  libevdev_uinput_write_event()
+  	  libevdev_uinput_write_event()  // Push event to device
       lock FIFO
-   	  dequeue event        // Get next event from reader
+   	  dequeue event                  // Get next event from reader
       unlock FIFO
     end if
 	
-	pthread_cond_wait()    // block until next interrupt from main()
+	pthread_cond_wait()    // Block until next interrupt from main()
 
   end while
 ```
@@ -202,9 +198,9 @@ MAIN:
   open /dev/rtc
   ioctl()           // set interrupt/polling rate
 
-  for reach device 
+  for each device:
 
-    setup FIFO
+    setup FIFO queue shared by reader-writer
 	create reader thread
 	create writer thread
 
@@ -213,7 +209,7 @@ MAIN:
   while (1):
 
     read /dev/rtc
-    pthread_cond_broadcast()
+    pthread_cond_broadcast()  // inform writer of "tick"
 
   end while
 ```
@@ -236,13 +232,13 @@ re-capture the mouse by the host OS.
 
 Some related links that may be useful:
 
-+ EvDev Wiki:
++ EvDev Wiki:  
 <https://en.wikipedia.org/wiki/Evdev>
 
-+ LibEvDev documentation:
++ LibEvDev documentation:  
 <https://www.freedesktop.org/software/libevdev/doc/1.4/index.html>
 
-+ Man pages:
++ Man pages:  
 <https://www.freedesktop.org/software/libevdev/doc/latest/group__init.html>
 
 + Understand the codes and values in the logfile:  
@@ -255,13 +251,10 @@ Some related links that may be useful:
 
 Partial list of possible next steps/features:
 
-+ Add support for game controller (auto detect in EvLag and parse in
-EvParse).
-
-+ Measure overhead (mean and variance) for EvLag.
-
 + Provide ability to simultaneous delay multiple devices, each with
 different amounts of delay.
+
++ Add option for delay variance.
 
 
 ## License
