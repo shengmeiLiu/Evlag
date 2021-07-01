@@ -1,0 +1,10 @@
+Package: evlag
+Version: 2.5
+Section: custom
+Priority: optional
+Architecture: all
+Essential: no
+Installed-Size: 23840
+Maintainer: Mark Claypool (claypool@cs.wpi.edu)
+Description: EvLag is a a simple tool for adding lag and monitoring device input in Linux.
+

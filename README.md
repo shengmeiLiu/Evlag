@@ -36,6 +36,8 @@ log files.  See below for details.
 
 + `logs` - sample log files produced by EvLag.
 
++ `debian` - configuration files for making a Debian package for EvLag.
+
 
 ## Compile
 
