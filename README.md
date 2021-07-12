@@ -32,11 +32,12 @@ log files.  See below for details.
 
 + `evparse` - the EvParse utility for parsing EvLag log files.
 
-+ `evdetect` - the EvDetect utility number finding a particular device.
++ `evdetect` - the EvDetect utility for finding a particular device number.
 
 + `logs` - sample log files produced by EvLag.
 
-+ `debian` - configuration files for making a Debian package for EvLag.
++ `debian` - configuration files for making and hosting a Debian
+  package for EvLag.
 
 
 ## Compile
