@@ -67,7 +67,6 @@ For setup, there are a lot of guides on the Internet for this.
 
 ## Install Package
 
-
 A. Add source Web server and directory.
 
     - Example: `echo "deb [trusted=yes] http://www.cs.wpi.edu/~claypool/packages ./" | sudo tee -a /etc/apt/sources.list`
