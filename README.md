@@ -56,6 +56,15 @@ To build EvLag:
 ```
 
 
+## Install
+
+After successful compilation, the EvLag binary can be put anywhere
+in your path (e.g., `/usr/local/bin`).
+
+Alternatively, a Debian package is provided via the Web. See "Install
+Package" in `debian/README.md`.
+
+
 ## Usage
 
 EvLag is run as a command line tool, indicating the amount of lag and
@@ -80,22 +89,24 @@ Usage: evlag [OPTION...]
 
 ```
 
+EvLag must be run as a superuser.
+
 For example:
 
 ```
-  sudo ./evlag -h 8192 -l 100 -d /dev/input/event10 -d /dev/input/event6
+  sudo ./evlag -h 8192 -l 100 -d /dev/input/event6 -d /dev/input/event10
 ```
 
-Will generate additional 100 ms of delay on the event10 device (e.g.,
-a mouse and a keyboard) with a polling rate of 8192 Hz. 
+Will generate additional 100 ms of delay on the event6 and event10
+devices (e.g., a mouse and a keyboard) with a polling rate of 8192 Hz.
 
 
 ## Output
 
-EvLag can produce logfiles upon request.  This is done by using the
-`-f NAME` flag, with NAME being used as the file prefix and `.log` as
-the suffix.  This creates a logfile for each device, using
-libevdev_get_name as the device type used as a prefix in the name.
+EvLag can produce logfiles upon request by using the `-f NAME` flag,
+with NAME being used as the file prefix and `.log` as the suffix.
+This creates a logfile for each device, using `libevdev_get_name()` as
+the device type used as a prefix in the file name.
 
 The logfiles are in comma separated value (CSV) format, with each row:
 
@@ -241,7 +252,7 @@ Some related links that may be useful:
 + LibEvDev documentation:  
 <https://www.freedesktop.org/software/libevdev/doc/1.4/index.html>
 
-+ Man pages:  
++ LibEvDev man pages:  
 <https://www.freedesktop.org/software/libevdev/doc/latest/group__init.html>
 
 + Understand the codes and values in the logfile:  
@@ -252,12 +263,12 @@ Some related links that may be useful:
 
 ## To Do
 
-Partial list of possible next steps/features:
+A partial list of possible next steps/features includes:
 
-+ Provide ability to simultaneous delay multiple devices, each with
-different amounts of delay.
++ Provide ability to delay multiple devices with different amounts of
+delay for each.
 
-+ Add option for delay variance.
++ Add option to add delay variance (jitter).
 
 
 ## License
