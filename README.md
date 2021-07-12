@@ -244,6 +244,13 @@ re-capture the mouse by the host OS.
 
 ## Links
 
+For more information, see:
+
+> Shengmei Liu and Mark Claypool. "EvLag - A Tool for Monitoring and
+> Lagging Linux Input Devices", In *Proceedings of the ACM Multimedia
+> Systems Conference (MMSys)*, Istanbul, Turkey, September 28 - October
+> 1, 2021. Online at: <http://www.cs.wpi.edu/~claypool/papers/evlag/>
+
 Some related links that may be useful:
 
 + EvDev Wiki:  
