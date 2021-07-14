@@ -1,0 +1,8 @@
+# Change permissions and ownership.
+chown -R root /usr/local/evlag
+chgrp -R root /usr/local/evlag
+chmod -R og+rx /usr/local/evlag
+
+# Display message for where things are installed.
+echo "EvLag utilities installed in /usr/local/evlag/:"
+ls -1d /usr/local/evlag/*
