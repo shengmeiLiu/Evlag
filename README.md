@@ -42,11 +42,11 @@ log files.  See below for details.
 
 ## Compile
 
-To compile EvLag, the `libevdev` package is needed.  On Ubuntu,
-this can be installed via:
+To compile EvLag, the `libevdev` development package is needed.  On
+Ubuntu, this can be installed via:
 
 ```
-  sudo apt install libevdev-lib
+  sudo apt install libevdev-dev
 ```
 
 To build EvLag:
