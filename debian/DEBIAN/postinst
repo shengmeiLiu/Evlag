@@ -1,7 +1,14 @@
 # Change permissions and ownership.
 chown -R root /usr/local/evlag
 chgrp -R root /usr/local/evlag
-chmod -R og+rx /usr/local/evlag
+chmod -R og+r /usr/local/evlag
+chmod og+x /usr/local/evlag
+chmod og+x /usr/local/evlag/evlag
+chmod og+x /usr/local/evlag/evparse.py
+chmod og+x /usr/local/evlag/evdetect.sh
+
+# Add new man pages to database.
+mandb
 
 # Display message for where things are installed.
 echo "EvLag utilities installed in /usr/local/evlag/:"

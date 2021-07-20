@@ -39,6 +39,8 @@ log files.  See below for details.
 + `debian` - configuration files for making and hosting a Debian
   package for EvLag.
 
++ `man` - man pages for evlag, evparse, and evdetect.
+
 
 ## Compile
 

@@ -51,15 +51,21 @@ Commands are examples only and may need to be modified to fit your installation.
 
     - `mkdir -p usr/local/evlag`
     - `mkdir -p usr/local/bin/`
+    - `mkdir -p usr/local/man/`
 
-1d. Copy in binaries/utilities and make links.
+1d. Copy in binaries/utilities/pages and make links.
 
     - `cp ../evlag/evlag usr/local/evlag`
     - `cp ../evdetect/evdetect.sh usr/local/evlag`
     - `cp ../evparse/evparse.py usr/local/evlag`
-    - `ln -s  usr/local/bin/evlag /usr/local/bin/evlag`
-    - `ln -s  usr/local/bin/evdetect.sh /usr/local/bin/evdetect.sh`
-    - `ln -s  usr/local/bin/evparse.py /usr/local/bin/evparse.py`
+    - `cp ../man/*.1 usr/local/evlag`
+    - `gzip usr/local/evlag/*.1`
+    - `ln -s usr/local/evlag/evlag /usr/local/bin/evlag`
+    - `ln -s usr/local/evlag/evdetect.sh /usr/local/bin/evdetect.sh`
+    - `ln -s usr/local/evlag/evparse.py /usr/local/bin/evparse.py`
+    - `ln -s usr/local/evlag/evlag.1.gz /usr/local/man/evlag.1.gz`
+    - `ln -s usr/local/evlag/evparse.py.1.gz /usr/local/man/evparse.py.1.gz`
+    - `ln -s usr/local/evlag/evdetect.sh.1.gz /usr/local/man/evdetect.sh.1.gz`
 
 2. Build package file.
 
