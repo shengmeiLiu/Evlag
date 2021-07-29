@@ -31,7 +31,7 @@ const char *argp_program_bug_address =
   "Mark Claypool <claypool@cs.wpi.edu>";
 
 static char doc[] =
-  "\nevlag -- A simple tool for lagging and moniotring input.\n"
+  "\nevlag -- A simple tool for lagging and monitoring input.\n"
   "Must be run as superuser.";
 
 static char args_doc[] =
